@@ -2,11 +2,14 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "bcryptjs": "^3.0.2",
+    "chess.js": "^1.1.0",
+    "chessboardjs": "^0.0.1",
     "dotenv": "^16.4.7",
     "next": "^15.2.4",
     "next-auth": "^4.24.11",
     "prisma": "^6.5.0",
     "react": "^19.0.0",
+    "react-chessboard": "^4.7.2",
     "react-dom": "^19.0.0",
     "sqlite3": "^5.1.7"
   },
