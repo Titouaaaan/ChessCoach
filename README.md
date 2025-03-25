@@ -21,7 +21,7 @@ ChessCoach is a Next.js application that serves as a personal chess coach. The a
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/ChessCoach.git
+   git clone https://github.com/Titouaaaan/ChessCoach.git
    cd ChessCoach
    ```
 
