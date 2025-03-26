@@ -50,8 +50,6 @@ export default function Dashboard() {
       }
     }
   };
-  
-  
 
   if (!session) {
     return <p>Please <a href="/auth">login or register</a> to access your dashboard.</p>;
@@ -62,35 +60,35 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
-      <h1>User Profile</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input type="text" name="name" value={formData.name || ''} onChange={handleChange} disabled={!editing} />
+    <div className="dashboard">
+      <h1 className="dashboard-title">User Profile</h1>
+      <form onSubmit={handleSubmit} className="dashboard-form">
+        <div className="dashboard-form-group">
+          <label className="dashboard-label">Name:</label>
+          <input type="text" name="name" value={formData.name || ''} onChange={handleChange} disabled={!editing} className="dashboard-input" />
         </div>
-        <div>
-          <label>Chess Level:</label>
-          <input type="number" name="chessLevel" value={formData.chessLevel || ''} onChange={handleChange} disabled={!editing} />
+        <div className="dashboard-form-group">
+          <label className="dashboard-label">Chess Level:</label>
+          <input type="number" name="chessLevel" value={formData.chessLevel || ''} onChange={handleChange} disabled={!editing} className="dashboard-input" />
         </div>
-        <div>
-          <label>Bio:</label>
-          <textarea name="bio" value={formData.bio || ''} onChange={handleChange} disabled={!editing} />
+        <div className="dashboard-form-group">
+          <label className="dashboard-label">Bio:</label>
+          <textarea name="bio" value={formData.bio || ''} onChange={handleChange} disabled={!editing} className="dashboard-textarea" />
         </div>
-        <div>
-          <label>Profile Picture URL:</label>
-          <input type="text" name="profilePic" value={formData.profilePic || ''} onChange={handleChange} disabled={!editing} />
+        <div className="dashboard-form-group">
+          <label className="dashboard-label">Profile Picture URL:</label>
+          <input type="text" name="profilePic" value={formData.profilePic || ''} onChange={handleChange} disabled={!editing} className="dashboard-input" />
         </div>
-        <div>
-          <label>Preferences:</label>
-          <input type="text" name="preferences" value={formData.preferences || ''} onChange={handleChange} disabled={!editing} />
+        <div className="dashboard-form-group">
+          <label className="dashboard-label">Preferences:</label>
+          <input type="text" name="preferences" value={formData.preferences || ''} onChange={handleChange} disabled={!editing} className="dashboard-input" />
         </div>
 
-        <button type="button" onClick={() => setEditing(true)} disabled={editing} style={{ marginRight: '10px' }}>
+        <button type="button" onClick={() => setEditing(true)} disabled={editing} className="dashboard-edit-button">
           Edit Profile
         </button>
 
-        <button type="submit" disabled={!editing} style={{ backgroundColor: editing ? '#007bff' : '#ccc', color: 'white' }}>
+        <button type="submit" disabled={!editing} className={`dashboard-submit-button ${editing ? 'active' : 'disabled'}`}>
           Confirm
         </button>
       </form>

@@ -53,10 +53,10 @@ export default function Auth() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="auth-container">
       {/* Login Form */}
-      <div style={styles.formContainer}>
-        <form onSubmit={handleLoginSubmit} style={styles.form}>
+      <div className="auth-form-container">
+        <form onSubmit={handleLoginSubmit} className="auth-form">
           <h2>Login</h2>
           <input
             type="email"
@@ -64,6 +64,7 @@ export default function Auth() {
             onChange={(e) => setLoginEmail(e.target.value)}
             placeholder="Email"
             required
+            className="auth-input"
           />
           <input
             type="password"
@@ -71,14 +72,15 @@ export default function Auth() {
             onChange={(e) => setLoginPassword(e.target.value)}
             placeholder="Password"
             required
+            className="auth-input"
           />
-          <button type="submit">Login</button>
+          <button type="submit" className="auth-button">Login</button>
         </form>
       </div>
 
       {/* Register Form */}
-      <div style={styles.formContainer}>
-        <form onSubmit={handleRegisterSubmit} style={styles.form}>
+      <div className="auth-form-container">
+        <form onSubmit={handleRegisterSubmit} className="auth-form">
           <h2>Register</h2>
           <input
             type="text"
@@ -86,6 +88,7 @@ export default function Auth() {
             onChange={(e) => setRegisterName(e.target.value)}
             placeholder="Name"
             required
+            className="auth-input"
           />
           <input
             type="email"
@@ -93,6 +96,7 @@ export default function Auth() {
             onChange={(e) => setRegisterEmail(e.target.value)}
             placeholder="Email"
             required
+            className="auth-input"
           />
           <input
             type="password"
@@ -100,33 +104,11 @@ export default function Auth() {
             onChange={(e) => setRegisterPassword(e.target.value)}
             placeholder="Password"
             required
+            className="auth-input"
           />
-          <button type="submit">Register</button>
+          <button type="submit" className="auth-button">Register</button>
         </form>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    padding: '20px',
-  },
-  formContainer: {
-    flex: 1,
-    padding: '20px',
-    margin: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-};
