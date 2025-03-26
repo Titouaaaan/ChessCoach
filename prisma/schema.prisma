@@ -18,4 +18,9 @@ model User {
   name      String?
   email     String   @unique
   password  String
+  chessLevel  Int?     // Chess level (e.g., Elo rating)
+  bio         String?  // Short bio or description
+  profilePic  String?  // URL to profile picture
+  preferences String? // User preferences or settings
+  createdAt   DateTime @default(now())
 }
