@@ -13,7 +13,7 @@ const ChessGame = () => {
     }
   }, [game]);
 
-  const handleMove = (source, target) => {
+  const handleRandomMove = (source, target) => {
     const newGame = new Chess(game.fen()); // Clone game state
     const move = newGame.move({
       from: source,
@@ -36,7 +36,60 @@ const ChessGame = () => {
         }
       }, 500);
     }
-  };
+  }; 
+
+  const handleStockfishMove = async (source, target) => {
+    // Clone current game state
+    const newGame = new Chess(game.fen());
+    
+    // Attempt user move
+    const move = newGame.move({
+      from: source,
+      to: target,
+      promotion: "q",
+    });
+  
+    if (move === null) return false;
+  
+    // Update state with user move
+    setGame(newGame);
+  
+    // Check game over after user move
+    if (newGame.isGameOver()) {
+      setIsGameOver(true);
+      return true;
+    }
+  
+    try {
+      // Get Stockfish move from backend
+      const response = await fetch("http://localhost:8001/api/stockfish-move/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ fen: newGame.fen() }),
+      });
+  
+      if (!response.ok) throw new Error("Stockfish request failed");
+  
+      const data = await response.json();
+      const stockfishGame = new Chess(newGame.fen());
+      
+      // Apply Stockfish move
+      stockfishGame.move(data.move);
+      setGame(stockfishGame);
+  
+      // Check game over after Stockfish move
+      if (stockfishGame.isGameOver()) {
+        setIsGameOver(true);
+      }
+    } catch (error) {
+      console.error("Stockfish error:", error);
+      alert("Error getting computer move");
+    }
+  
+    return true;
+  };  
 
   const resetGame = () => {
     const confirmReset = window.confirm("Are you sure you want to reset the game?");
@@ -60,7 +113,7 @@ const ChessGame = () => {
       <div style={styles.boardContainer}>
       <Chessboard 
         position={game.fen()} 
-        onPieceDrop={handleMove} 
+        onPieceDrop={handleStockfishMove} 
         boardWidth={Math.min(window.innerWidth * 0.8, window.innerHeight * 0.8)} 
       />
 </div>
