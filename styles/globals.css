@@ -14,47 +14,7 @@ body {
     border-top: 1px solid #ddd;
     text-align: center;
   }
-
-  .chessContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100vw;
-    height: 100vh;
-    padding: 20px;
-    background-color: white;
-  }
   
-  .chessSidebar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 150px;
-    padding: 20px;
-    background-color: white;
-    border-right: 1px solid #ddd;
-  }
-  
-  .chessBoardContainer {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-  }
-  
-  .chessMenuButton {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-
   .chessmodal-overlay {
     position: fixed;
     top: 0;
@@ -343,3 +303,119 @@ body {
     }
   }
   
+  /* Main Play Page */
+.play-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  min-height: 100vh;
+  color: white;
+  font-family: "Arial", sans-serif;
+}
+
+.play-title {
+  font-size: 36px;
+  color: black;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.chess-game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Login Message */
+.login-message {
+  font-size: 18px;
+  color: #ddd;
+  text-align: center;
+}
+
+.login-message a {
+  color: #ccffcc;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-message a:hover {
+  text-decoration: underline;
+}
+
+/* Chess Game Styling */
+.chessContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Sidebar */
+.chessSidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #333;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Reset Button */
+.chessMenuButton {
+  background-color: #ccffcc;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.chessMenuButton:hover {
+  background-color: #ccffcc;
+  transform: scale(1.05);
+}
+
+/* Chessboard */
+.chessBoardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chessContainer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .chessSidebar {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .chessBoardContainer {
+    padding: 10px;
+  }
+
+  .chessMenuButton {
+    width: 100%;
+  }
+}
