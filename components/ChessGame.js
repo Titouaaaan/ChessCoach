@@ -104,66 +104,22 @@ const ChessGame = () => {
   };
 
   return (
-    <div style={styles.container}>
-        <div style={styles.sidebar}>
-        <button style={styles.menuButton} onClick={resetGame}>
+    <div className="chessContainer">
+      <div className="chessSidebar">
+        <button className="chessMenuButton" onClick={resetGame}>
           Reset Game
         </button>
       </div>
-      <div style={styles.boardContainer}>
-      <Chessboard 
-        position={game.fen()} 
-        onPieceDrop={handleStockfishMove} 
-        boardWidth={Math.min(window.innerWidth * 0.8, window.innerHeight * 0.8)} 
-      />
-</div>
+      <div className="chessBoardContainer">
+        <Chessboard
+          position={game.fen()}
+          onPieceDrop={handleStockfishMove}
+          boardWidth={Math.min(window.innerWidth * 0.8, window.innerHeight * 0.8)}
+        />
+      </div>
       {isGameOver && <GameOverModal onClose={closeModal} />}
     </div>
   );
 };
-
-const styles = 
-    {
-      container: {
-        display: 'flex',
-        justifyContent: 'center', // Ensure centering
-        alignItems: 'center',
-        width: '100vw',
-        height: '100vh',
-        padding: '20px',
-        backgroundColor: 'white',
-      },
-
-        sidebar: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '150px',
-        padding: '20px',
-        backgroundColor: 'white',
-        borderRight: '1px solid #ddd',
-        },
-
-        boardContainer: {
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          width: '100%',
-        },
-        
-
-        menuButton: {
-        padding: '10px 20px',
-        backgroundColor: '#007bff',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '16px',
-        marginBottom: '10px',
-        },
-    };
 
 export default ChessGame;

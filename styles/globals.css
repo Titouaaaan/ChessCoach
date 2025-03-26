@@ -7,4 +7,118 @@ body {
     padding: 20px;
     min-height: calc(100vh - 140px); /* Adjust based on header and footer height */
   }
+
+  .footer {
+    background-color: #ccffcc;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+  }
+
+  .chessContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    background-color: white;
+  }
   
+  .chessSidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    padding: 20px;
+    background-color: white;
+    border-right: 1px solid #ddd;
+  }
+  
+  .chessBoardContainer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+  }
+  
+  .chessMenuButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .chessmodal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .chessmodal-modal {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .chessmodal-closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .chessmodal-modalText {
+    font-size: 24px;
+    color: black;
+    margin-top: 10px;
+  }
+
+  .header {
+    background-color: #ccffcc;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-title {
+    margin: 0;
+    font-size: 24px;
+  }
+  
+  .header-nav {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .header-link {
+    text-decoration: none;  /* Remove underline */
+    color: #000000;         /* Black text color */
+    font-size: 16px;
+  }
+
+  .layout-main {
+    background-color: white;
+  }

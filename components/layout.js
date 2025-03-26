@@ -4,18 +4,12 @@ import Footer from './Footer';
 
 const Layout = ({ children }) => {
   return (
-    <div style={styles.mainpage}>
+    <div className='layout-main'>
       <Header />
       <main>{children}</main>
       <Footer />
     </div>
   );
 };
-
-const styles = {
-    mainpage: {
-        backgroundColor: 'white'
-    }
-}
 
 export default Layout;
