@@ -16,6 +16,8 @@ ChessCoach is a Next.js application that serves as a personal chess coach. The a
 - **Prisma** - ORM for managing the database.
 - **LangGraph** - AI agent orchestration for game analysis and commentary.
 - **Chess Bot API / Local Engine** - Classic chess engine integration for adaptive gameplay.
+- **FastAPI** - High-performance API framework for Python.
+- **Uvicorn** - ASGI server for running FastAPI.
 
 ### Installation
 
@@ -28,6 +30,10 @@ ChessCoach is a Next.js application that serves as a personal chess coach. The a
 2. Install dependencies:
    ```sh
    npm install
+   ```
+   and for the backend go to the backend folder and 
+   ```sh
+   pip install -r requirements.txt
    ```
 
 3. Set up the environment variables:
@@ -56,6 +62,18 @@ npm run dev
 npm run build
 npm start
 ```
+
+#### Backend
+```sh
+uvicorn backend.main:app --reload --port 8001
+```
+
+| Endpoint               | Method | Description                         |
+|------------------------|--------|-------------------------------------|
+| `/`                   | GET    | Health check                       |
+| `/api/test`           | GET    | Engine connectivity test           |
+| `/api/stockfish-move/` | POST   | Get best move for a given FEN position |
+
 
 ## To do list
 
