@@ -122,3 +122,224 @@ body {
   .layout-main {
     background-color: white;
   }
+
+  .dashboard {
+    padding: 20px;
+  }
+  
+  .dashboard-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .dashboard-form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dashboard-label {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .dashboard-input, .dashboard-textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+  }
+  
+  .dashboard-textarea {
+    height: 100px;
+  }
+  
+  .dashboard-edit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .dashboard-submit-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .dashboard-submit-button.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .dashboard-submit-button.disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+  
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+  
+  .auth-form-container {
+    flex: 1;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+  }
+  
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .auth-input {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+  }
+  
+  .auth-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .auth-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .auth-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f9;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .home-title {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .home-description {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .home-description p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
+    text-align: center;
+  }
+  
+  .home-features {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .home-features h2 {
+    font-size: 24px;
+    color: black;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .feature-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 16px;
+    color: #444;
+  }
+  
+  .feature-list li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  
+  .tech-stack-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 16px;
+    color: #444;
+  }
+  
+  .tech-stack-list li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  
+  .home-description, .home-features {
+    transition: transform 0.3s ease;
+  }
+  
+  .home-description:hover, .home-features:hover {
+    transform: scale(1.02);
+  }
+  
+  @media (max-width: 768px) {
+    .home-container {
+      padding: 15px;
+    }
+  
+    .home-title {
+      font-size: 28px;
+    }
+  
+    .home-description, .home-features {
+      max-width: 100%;
+    }
+  }
+  
