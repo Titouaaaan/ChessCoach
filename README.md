@@ -21,36 +21,57 @@ ChessCoach is a Next.js application that serves as a personal chess coach. The a
 
 ### Installation
 
-1. Clone the repository:
+Clone the repository:
    ```sh
    git clone https://github.com/Titouaaaan/ChessCoach.git
    cd ChessCoach
    ```
 
-2. Install dependencies:
+To install all the dependencies automatically there is a script that does it for you (if you don't want to do that you can do it the old school way by following the next section)
+
+On windows, simply run the script
+```sh
+run.bat
+```
+
+and on linux/mac
+```sh
+run.sh
+```
+but make sure to make it executable but running this command in the terminal first
+```sh
+chmod +x run.sh
+```
+
+I didn't test it on linux and mac so it could act funky (please let me know if you find errors)
+
+#### Manually install dependencies if .sh/.bat doesn't work
+1. Install dependencies:
    ```sh
    npm install
    ```
-   and for the backend go to the backend folder and 
+   and for the backend go to the **backend** folder  and 
    ```sh
    pip install -r requirements.txt
    ```
 
-3. Set up the environment variables:
+2. Set up the environment variables:
    - Create a `.env` file in the root directory.
    - Add the necessary variables, such as database URL and authentication secrets.
 
-4. Initialize the database:
+3. Initialize the database (you might need to initialize and generate it too):
    ```sh
+   npx prisma init
+   npx prisma generate
    npx prisma migrate dev
    ```
 
-5. Open Prisma Studio (optional, for database inspection):
+4. Open Prisma Studio (optional, for database inspection):
    ```sh
    npx prisma studio
    ```
 
-### Running the App
+### Running the App (useful if the .bat/.sh didn't work)
 
 #### Development Mode
 ```sh
@@ -64,6 +85,15 @@ npm start
 ```
 
 #### Backend
+Make sure you init the venv (backendvenv for ex.) like this:
+```
+backendvenv\Scripts\activate
+```
+or this for linux/mac
+```
+source backendvenv/bin/activate
+```
+
 ```sh
 uvicorn backend.main:app --reload --port 8001
 ```
@@ -86,5 +116,8 @@ Phase 1 (before AI stuff)
 - [ ] add a text box to print the winning odds of the game (advantage)
 - [ ] add a logging system for debugging or game review 
 - [ ] make the website pretty (oh lord that will take forever)
+
+Phase 2 
+TBD
 
 very useful [stockfish documentation](https://python-chess.readthedocs.io/en/latest/engine.html)
