@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import chess
 import chess.engine
-import os
 import logging
 
 # Configure logging
@@ -33,6 +32,21 @@ class FenRequest(BaseModel):
 class StockfishLevelRequest(BaseModel):
     level: int
 
+def get_engine_limits(level: int):
+    """
+    Define engine limits based on the skill level.
+    """
+    if level == 0:
+        return chess.engine.Limit(time=0.1, depth=1, nodes=1000)
+    elif level <= 5:
+        return chess.engine.Limit(time=0.5, depth=3, nodes=5000)
+    elif level <= 10:
+        return chess.engine.Limit(time=1.0, depth=5, nodes=10000)
+    elif level <= 15:
+        return chess.engine.Limit(time=2.0, depth=10, nodes=50000)
+    else:
+        return chess.engine.Limit(time=5.0, depth=20, nodes=100000)
+
 @app.get("/")
 async def root():
     return {"message": "ChessCoachBackend is working!"}
@@ -54,24 +68,21 @@ async def get_stockfish_level():
 @app.post("/api/stockfish-move/")
 async def get_stockfish_move(request: FenRequest):
     try:
-        transport, engine = await chess.engine.popen_uci(ENGINE_PATH)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to initialize Stockfish engine: {str(e)}")
+        async with chess.engine.popen_uci(ENGINE_PATH) as engine:
+            board = chess.Board(request.fen)
 
-    try:
-        board = chess.Board(request.fen)
+            # Set the engine's skill level
+            await engine.configure({"Skill Level": stockfish_level})
 
-        # Apply configuration after engine initialization
-        await engine.configure({"Skill Level": stockfish_level})
-        logger.info(f"Configured Stockfish with skill level: {stockfish_level}")
+            # Get engine limits based on the current level
+            limits = get_engine_limits(stockfish_level)
+            logger.info(f"Applying engine limits: {limits}")
 
-        result = await engine.play(board, chess.engine.Limit(time=1.0))
-        san_move = board.san(result.move)
-        return {"move": san_move}
+            # Apply the limits when requesting a move
+            result = await engine.play(board, limits)
+            san_move = board.san(result.move)
+            return {"move": san_move}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f"Invalid FEN: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        await engine.quit()
-
