@@ -58,8 +58,12 @@ const ChessGame = () => {
         </button>
       </div>
       <div style={styles.boardContainer}>
-        <Chessboard position={game.fen()} onPieceDrop={handleMove} boardWidth={Math.min(600, window.innerWidth - 20)} />
-      </div>
+      <Chessboard 
+        position={game.fen()} 
+        onPieceDrop={handleMove} 
+        boardWidth={Math.min(window.innerWidth * 0.8, window.innerHeight * 0.8)} 
+      />
+</div>
       {isGameOver && <GameOverModal onClose={closeModal} />}
     </div>
   );
@@ -67,13 +71,15 @@ const ChessGame = () => {
 
 const styles = 
     {
-        container: {
+      container: {
         display: 'flex',
-        width : '170vh',
+        justifyContent: 'center', // Ensure centering
+        alignItems: 'center',
+        width: '100vw',
         height: '100vh',
         padding: '20px',
-        backgroundColor: 'white'
-        },
+        backgroundColor: 'white',
+      },
 
         sidebar: {
         display: 'flex',
@@ -86,12 +92,14 @@ const styles =
         },
 
         boardContainer: {
-        flex: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100%',
         },
+        
 
         menuButton: {
         padding: '10px 20px',
