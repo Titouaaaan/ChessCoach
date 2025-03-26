@@ -1,11 +1,11 @@
 # ChessCoach
 
-ChessCoach is a Next.js application that serves as a personal chess coach. The app integrates a chess bot for gameplay and uses an AI-powered assistant to analyze and comment on games in real-time.
+ChessCoach is a Next.js application that serves as a personal chess coach. The app integrates a chess bot for gameplay and uses an AI-powered assistant to analyze, comment on games in real-time and guide the player to get better. 
 
 ## Features
 
-- **Play Against a Bot**: Challenge a chess bot that adapts to your skill level.
-- **AI Game Commentary**: The AI assistant provides insights during the game, such as openings, tactics, and key moments.
+- **Play Against a Bot**: Challenge a chess bot that (can) adapts to your skill level.
+- **AI Game Commentary**: The AI assistant provides insights during the game, such as openings, tactics, and key moments based on stockfish analysis.
 - **Move Suggestions**: Get coaching advice based on your gameplay.
 - **Game Review**: Analyze completed games with AI-generated feedback.
 
@@ -57,8 +57,15 @@ npm run build
 npm start
 ```
 
-## Stuff that will be done 
+## To do list
 
-- Enhance AI analysis with deeper chess understanding.
-- Implement a user ranking and tracking system.
-- Add support for different chess variants.
+Phase 1 (before AI stuff)
+- [x] add stockfish
+- [ ] add a button to start playing to not always have the board displayed
+- [ ] change the difficulty of stockfish based on the saved rating of the user (if there is one)
+- [ ] change the difficulty of stockfish manually (choose after clicking play)
+- [ ] add button to change difficulty during the game
+- [ ] add a text box to print the winning odds of the game (advantage)
+- [ ] make the website pretty (oh lord that will take forever)
+
+very useful [stockfish documentation](https://python-chess.readthedocs.io/en/latest/engine.html)
