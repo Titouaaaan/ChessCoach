@@ -54,7 +54,7 @@ export default function Dashboard() {
   
 
   if (!session) {
-    return <p>Please <a href="/login">login</a> to access your dashboard.</p>;
+    return <p>Please <a href="/auth">login or register</a> to access your dashboard.</p>;
   }
 
   if (!user) {
