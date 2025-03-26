@@ -5,23 +5,21 @@ export default function Play() {
   const { data: session } = useSession();
 
   if (!session) {
-    return <p>Please <a href="/auth">login or register</a> to play chess.</p>;
+    return (
+      <div className="play-container">
+        <p className="login-message">
+          Please <a href="/auth">login or register</a> to play chess.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Play Chess</h1>
-      <div style={styles.chessboard}>
+    <div className="play-container">
+      <h1 className="play-title">Play Chess</h1>
+      <div className="chess-game-container">
         <ChessGame />
       </div>
     </div>
   );
-}
-
-const styles = {
-    chessboard : {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
 }
