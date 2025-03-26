@@ -66,6 +66,7 @@ Phase 1 (before AI stuff)
 - [ ] change the difficulty of stockfish manually (choose after clicking play)
 - [ ] add button to change difficulty during the game
 - [ ] add a text box to print the winning odds of the game (advantage)
+- [ ] add a logging system for debugging or game review 
 - [ ] make the website pretty (oh lord that will take forever)
 
 very useful [stockfish documentation](https://python-chess.readthedocs.io/en/latest/engine.html)
