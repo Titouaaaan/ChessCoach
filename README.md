@@ -19,6 +19,21 @@ ChessCoach is a Next.js application that serves as a personal chess coach. The a
 - **FastAPI** - High-performance API framework for Python.
 - **Uvicorn** - ASGI server for running FastAPI.
 
+## Pre-requisites
+
+Make sure you have the following installed before proceeding:
+
+Node.js & npm – Download and install from [nodejs.org](https://nodejs.org/en) (npm comes with Node.js).
+
+Python (3.8 or later) – Install from [python.org](https://www.python.org/) and ensure it’s added to your system PATH.
+
+You can check if they are installed by running:
+```sh
+node -v  # Should print the Node.js version
+npm -v   # Should print the npm version
+python --version  # Should print the Python version
+```
+
 ### Installation
 
 Clone the repository:
@@ -38,14 +53,14 @@ and on linux/mac
 ```sh
 run.sh
 ```
-but make sure to make it executable but running this command in the terminal first
+but make sure to make it executable but running this command in the terminal first (for linux/mac users only)
 ```sh
 chmod +x run.sh
 ```
 
 I didn't test it on linux and mac so it could act funky (please let me know if you find errors)
 
-#### Manually install dependencies if .sh/.bat doesn't work
+### Manually install dependencies if .sh/.bat doesn't work
 1. Install dependencies:
    ```sh
    npm install
