@@ -38,14 +38,14 @@ and on linux/mac
 ```sh
 run.sh
 ```
-but make sure to make it executable but running this command in the terminal first
+but make sure to make it executable but running this command in the terminal first (for linux/mac users only)
 ```sh
 chmod +x run.sh
 ```
 
 I didn't test it on linux and mac so it could act funky (please let me know if you find errors)
 
-#### Manually install dependencies if .sh/.bat doesn't work
+### Manually install dependencies if .sh/.bat doesn't work
 1. Install dependencies:
    ```sh
    npm install
