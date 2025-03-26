@@ -5,7 +5,7 @@ export default function Play() {
   const { data: session } = useSession();
 
   if (!session) {
-    return <p>Please <a href="/login">login</a> to play chess.</p>;
+    return <p>Please <a href="/auth">login or register</a> to play chess.</p>;
   }
 
   return (
