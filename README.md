@@ -113,12 +113,13 @@ source backendvenv/bin/activate
 uvicorn backend.main:app --reload --port 8001
 ```
 
-| Endpoint               | Method | Description                         |
-|------------------------|--------|-------------------------------------|
-| `/`                   | GET    | Health check                       |
-| `/api/test`           | GET    | Engine connectivity test           |
-| `/api/stockfish-move/` | POST   | Get best move for a given FEN position |
-
+| Endpoint                     | Method | Description                                  |
+|------------------------------|--------|----------------------------------------------|
+| `/`                          | GET    | Health check                                |
+| `/api/get-stockfish-level/`  | GET    | Retrieve the current Stockfish skill level  |
+| `/api/set-stockfish-level/`  | POST   | Set the Stockfish skill level (0-20)       |
+| `/api/stockfish-move/`       | POST   | Get the best move for a given FEN position |
+| `/api/eval-position/`        | POST   | Evaluate a given chess position (FEN)      |
 
 ## To do list
 
