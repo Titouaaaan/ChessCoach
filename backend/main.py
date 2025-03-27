@@ -107,3 +107,31 @@ async def get_stockfish_move(request: FenRequest):
         error_trace = traceback.format_exc()  # Get full traceback
         logger.error(f"Unexpected error:\n{error_trace}")  # Log the full traceback
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+@app.post("/api/eval-position/")
+async def eval_position(request: FenRequest):
+    try:
+        # Log the incoming FEN to see what was sent
+        logger.info(f"Received FEN: {request.fen}")
+        
+        transport, engine = await chess.engine.popen_uci(ENGINE_PATH)
+
+        board = chess.Board(request.fen)
+        info = await engine.analyse(board, chess.engine.Limit(time=0.1, depth=20))
+
+        score = info["score"].relative.score(mate_score=10000) if "score" in info else None
+
+        # Log the score result
+        logger.info(f"Evaluated position: {score}")
+
+        await engine.quit()  # Make sure to properly quit the engine session
+
+        return {"score": score}
+    
+    except ValueError as e:
+        logger.error(f"Invalid FEN: {str(e)}")  # Log invalid FEN errors
+        raise HTTPException(status_code=400, detail=f"Invalid FEN: {str(e)}")
+    
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")  # Log any unexpected errors
+        raise HTTPException(status_code=500, detail=str(e))
