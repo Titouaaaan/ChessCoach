@@ -10,6 +10,12 @@ const ChessGame = () => {
   const [levelMessage, setLevelMessage] = useState("Loading...");
   const [evaluation, setEvaluation] = useState(null);
   const [gameOverMessage, setGameOverMessage] = useState("");
+  const [moves, setMoves] = useState([]);
+
+  const getPieceName = (piece) => {
+    const names = { p: "Pawn", n: "Knight", b: "Bishop", r: "Rook", q: "Queen", k: "King" };
+    return names[piece.toLowerCase()] || "Unknown";
+  };
 
   useEffect(() => {
     const fetchStockfishLevel = async () => {
@@ -51,8 +57,13 @@ const ChessGame = () => {
 
   const handleStockfishMove = async (source, target) => {
     const newGame = new Chess(game.fen());
+    const moveNumber = '' //Math.floor(newGame.history().length / 2) + 1;
     const move = newGame.move({ from: source, to: target, promotion: "q" });
     if (move === null) return false;
+
+    const moveNotation = `${moveNumber}. w : ${getPieceName(move.piece)} - ${move.san}`;
+    setMoves((prevMoves) => [...prevMoves, moveNotation]);
+
     setGame(newGame);
 
     if (newGame.isGameOver()) {
@@ -71,9 +82,14 @@ const ChessGame = () => {
 
       const data = await response.json();
       const stockfishGame = new Chess(newGame.fen());
-      stockfishGame.move(data.move);
-      setGame(stockfishGame);
 
+      const stockfishMove = stockfishGame.move(data.move);
+
+      const stockfishMoveNotation = `${moveNumber}. b : ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
+      setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
+      
+      setGame(stockfishGame);
+      
       if (stockfishGame.isGameOver()) setIsGameOver(true);
     } catch (error) {
       console.error("Stockfish error:", error);
@@ -120,7 +136,11 @@ const ChessGame = () => {
   return (
     <div className="chessContainer">
       <div className="chessSidebar">
-        <button className="chessMenuButton" onClick={() => setGame(new Chess())}> Reset Game</button>
+        <button className="chessMenuButton" onClick={() => {
+          setGame(new Chess());
+          setMoves([]);
+            }}> Reset Game
+        </button>
         <div>
           <label htmlFor="stockfish-level">Stockfish Level:</label>
           <select id="stockfish-level" value={stockfishLevel} onChange={changeStockfishLevel}>
@@ -139,6 +159,16 @@ const ChessGame = () => {
           onPieceDrop={handleStockfishMove}
           boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
         />
+      </div>
+      <div className="moveHistory">
+        <h3>Move History</h3>
+        <ul>
+          {moves.map((move, index) => (
+            <li key={index} style={{ backgroundColor: index % 2 === 0 ? "lightgray" : "darkgray", padding : "5px", borderRadius : "3px" }}>
+              {move}
+            </li>
+          ))}
+        </ul>
       </div>
       {isGameOver && <GameOverModal message={gameOverMessage} onClose={() => setIsGameOver(false)} />}
     </div>

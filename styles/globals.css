@@ -419,3 +419,23 @@ body {
     width: 100%;
   }
 }
+
+.moveHistory {
+  width: 200px;
+  background-color: black;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-y: auto;
+  max-height: 400px;
+  color: white;
+}
+
+.moveHistory ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.moveHistory li {
+  font-family: monospace;
+  padding: 2px 0;
+}
