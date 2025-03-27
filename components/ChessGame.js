@@ -4,7 +4,7 @@ import { Chessboard } from "react-chessboard";
 import GameOverModal from "./GameOverModal";
 
 const ChessGame = () => {
-  const [game, setGame] = useState(new Chess());
+  const [game, setGame] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
   const [stockfishLevel, setStockfishLevel] = useState(null);
   const [levelMessage, setLevelMessage] = useState("Loading...");
@@ -35,7 +35,7 @@ const ChessGame = () => {
   }, []);
 
   useEffect(() => {
-    if (game.isGameOver()) {
+    if (game && game.isGameOver()) {
       setIsGameOver(true);
       let resultMessage = "";
 
@@ -49,24 +49,25 @@ const ChessGame = () => {
         resultMessage = "Game Over (unknown reason)";
       }
 
-      setGameOverMessage(resultMessage);  // Set the message to display in the modal
-      setLevelMessage(resultMessage);  // Display the result message in the sidebar
-    } 
-    getGameEval(game.fen());
+      setGameOverMessage(resultMessage);
+      setLevelMessage(resultMessage);
+    }
+    if (game) {
+      getGameEval(game.fen());
+    }
   }, [game]);
 
   const handleStockfishMove = async (source, target) => {
-    const newGame = new Chess(game.fen());
-    const moveNumber = '' //Math.floor(newGame.history().length / 2) + 1;
-    const move = newGame.move({ from: source, to: target, promotion: "q" });
+    const move = game.move({ from: source, to: target, promotion: "q" });
     if (move === null) return false;
 
-    const moveNotation = `${moveNumber}. w : ${getPieceName(move.piece)} - ${move.san}`;
+    const moveNumber = Math.floor(game.history().length / 2) + 1;
+    const moveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(move.piece)} - ${move.san}`;
+
     setMoves((prevMoves) => [...prevMoves, moveNotation]);
+    setGame(game); // Update the game state
 
-    setGame(newGame);
-
-    if (newGame.isGameOver()) {
+    if (game.isGameOver()) {
       setIsGameOver(true);
       return true;
     }
@@ -75,22 +76,20 @@ const ChessGame = () => {
       const response = await fetch("http://localhost:8001/api/stockfish-move/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fen: newGame.fen() }),
+        body: JSON.stringify({ fen: game.fen() }),
       });
 
       if (!response.ok) throw new Error("Stockfish request failed");
 
       const data = await response.json();
-      const stockfishGame = new Chess(newGame.fen());
+      const stockfishMove = game.move(data.move);
 
-      const stockfishMove = stockfishGame.move(data.move);
-
-      const stockfishMoveNotation = `${moveNumber}. b : ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
+      const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
       setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
-      
-      setGame(stockfishGame);
-      
-      if (stockfishGame.isGameOver()) setIsGameOver(true);
+
+      setGame(game); // Update the game state
+
+      if (game.isGameOver()) setIsGameOver(true);
     } catch (error) {
       console.error("Stockfish error:", error);
       alert("Error getting computer move");
@@ -122,24 +121,29 @@ const ChessGame = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fen }),
       });
-  
+
       if (!response.ok) throw new Error("Failed to fetch game evaluation");
-  
+
       const data = await response.json();
-      setEvaluation(data.score); // Store score in state
+      setEvaluation(data.score);
     } catch (error) {
       console.error("Error fetching game evaluation:", error);
     }
   };
-   
+
+  const startNewGame = () => {
+    setGame(new Chess());
+    setMoves([]);
+    setIsGameOver(false);
+    setGameOverMessage("");
+    setEvaluation(null);
+  };
 
   return (
     <div className="chessContainer">
       <div className="chessSidebar">
-        <button className="chessMenuButton" onClick={() => {
-          setGame(new Chess());
-          setMoves([]);
-            }}> Reset Game
+        <button className="chessMenuButton" onClick={startNewGame}>
+          Start Game
         </button>
         <div>
           <label htmlFor="stockfish-level">Stockfish Level:</label>
@@ -150,21 +154,23 @@ const ChessGame = () => {
           </select>
         </div>
         <div>
-        <strong>Position Evaluation:</strong> {evaluation !== null ? evaluation : "N/A"}
-      </div>
+          <strong>Position Evaluation:</strong> {evaluation !== null ? evaluation : "N/A"}
+        </div>
       </div>
       <div className="chessBoardContainer">
-        <Chessboard
-          position={game.fen()}
-          onPieceDrop={handleStockfishMove}
-          boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
-        />
+        {game && (
+          <Chessboard
+            position={game.fen()}
+            onPieceDrop={handleStockfishMove}
+            boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
+          />
+        )}
       </div>
       <div className="moveHistory">
         <h3>Move History</h3>
         <ul>
           {moves.map((move, index) => (
-            <li key={index} style={{ backgroundColor: index % 2 === 0 ? "lightgray" : "darkgray", padding : "5px", borderRadius : "3px" }}>
+            <li key={index} style={{ backgroundColor: index % 2 === 0 ? "lightgray" : "darkgray", padding: "5px", borderRadius: "3px" }}>
               {move}
             </li>
           ))}
