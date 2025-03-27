@@ -5,9 +5,10 @@ const Footer = () => {
   return (
     <footer className='footer'>
       <p>&copy; {new Date().getFullYear()} Chess Coach App.</p>
-      <button onClick={() => signOut()}>Logout</button>
+      <button className="footer-button" onClick={() => signOut()}>Logout</button>
     </footer>
   );
 };
+
 
 export default Footer;
