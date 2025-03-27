@@ -8,6 +8,8 @@ const ChessGame = () => {
   const [isGameOver, setIsGameOver] = useState(false);
   const [stockfishLevel, setStockfishLevel] = useState(null);
   const [levelMessage, setLevelMessage] = useState("Loading...");
+  const [evaluation, setEvaluation] = useState(null);
+
 
   useEffect(() => {
     if (game.isGameOver()) {
@@ -31,6 +33,14 @@ const ChessGame = () => {
 
     fetchStockfishLevel();
   }, []);
+
+  useEffect(() => {
+    if (game.isGameOver()) {
+      setIsGameOver(true);
+    }
+    getGameEval(game.fen()); // Fetch evaluation on every move
+  }, [game]);
+  
 
   const handleStockfishMove = async (source, target) => {
     const newGame = new Chess(game.fen());
@@ -82,6 +92,24 @@ const ChessGame = () => {
     }
   };
 
+  const getGameEval = async (fen) => {
+    try {
+      const response = await fetch("http://localhost:8001/api/eval-position/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fen }),
+      });
+  
+      if (!response.ok) throw new Error("Failed to fetch game evaluation");
+  
+      const data = await response.json();
+      setEvaluation(data.score); // Store score in state
+    } catch (error) {
+      console.error("Error fetching game evaluation:", error);
+    }
+  };
+   
+
   return (
     <div className="chessContainer">
       <div className="chessSidebar">
@@ -94,10 +122,9 @@ const ChessGame = () => {
             ))}
           </select>
         </div>
-        {/* Uncomment this to see the current stock fish level (mostly for debugging */}
-        {/* <div>
-          <p>{levelMessage}</p>
-        </div> */}
+        <div>
+        <strong>Position Evaluation:</strong> {evaluation !== null ? evaluation : "N/A"}
+      </div>
       </div>
       <div className="chessBoardContainer">
         <Chessboard
