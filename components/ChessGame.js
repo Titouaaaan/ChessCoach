@@ -9,13 +9,7 @@ const ChessGame = () => {
   const [stockfishLevel, setStockfishLevel] = useState(null);
   const [levelMessage, setLevelMessage] = useState("Loading...");
   const [evaluation, setEvaluation] = useState(null);
-
-
-  useEffect(() => {
-    if (game.isGameOver()) {
-      setIsGameOver(true);
-    }
-  }, [game]);
+  const [gameOverMessage, setGameOverMessage] = useState("");
 
   useEffect(() => {
     const fetchStockfishLevel = async () => {
@@ -37,10 +31,23 @@ const ChessGame = () => {
   useEffect(() => {
     if (game.isGameOver()) {
       setIsGameOver(true);
-    }
-    getGameEval(game.fen()); // Fetch evaluation on every move
+      let resultMessage = "";
+
+      if (game.isCheckmate()) {
+        resultMessage = game.turn() === "w" ? "Black wins by checkmate" : "White wins by checkmate";
+      } else if (game.isStalemate()) {
+        resultMessage = "It's a draw (stalemate)";
+      } else if (game.isDraw()) {
+        resultMessage = "It's a draw (insufficient material, threefold repetition, or 50-move rule)";
+      } else {
+        resultMessage = "Game Over (unknown reason)";
+      }
+
+      setGameOverMessage(resultMessage);  // Set the message to display in the modal
+      setLevelMessage(resultMessage);  // Display the result message in the sidebar
+    } 
+    getGameEval(game.fen());
   }, [game]);
-  
 
   const handleStockfishMove = async (source, target) => {
     const newGame = new Chess(game.fen());
@@ -133,7 +140,7 @@ const ChessGame = () => {
           boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
         />
       </div>
-      {isGameOver && <GameOverModal onClose={() => setIsGameOver(false)} />}
+      {isGameOver && <GameOverModal message={gameOverMessage} onClose={() => setIsGameOver(false)} />}
     </div>
   );
 };
