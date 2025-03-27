@@ -1,6 +1,4 @@
-// handleMovesAndEval.js
-
-export const handleMove = async (source, target, game, setMoves, getGameEval, setGameOverMessage, setIsGameOver) => {
+export const handleMove = async (source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver) => {
   const move = game.move({ from: source, to: target, promotion: "q" });
   if (move === null) return false;
 
@@ -8,7 +6,11 @@ export const handleMove = async (source, target, game, setMoves, getGameEval, se
   const moveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(move.piece)} - ${move.san}`;
 
   setMoves((prevMoves) => [...prevMoves, moveNotation]);
-  getGameEval(game.fen());
+
+  // Evaluate the position after the player's move
+  const evaluation = await getGameEval(game.fen());
+  console.log("Evaluation after player's move:", evaluation); // Debugging log
+  setEvaluation(evaluation);
 
   if (game.isGameOver()) {
     let resultMessage = "";
@@ -42,7 +44,11 @@ export const handleMove = async (source, target, game, setMoves, getGameEval, se
 
     const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
     setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
-    getGameEval(game.fen());
+
+    // Evaluate the position after Stockfish's move
+    const newEvaluation = await getGameEval(game.fen());
+    console.log("Evaluation after Stockfish's move:", newEvaluation); // Debugging log
+    setEvaluation(newEvaluation);
 
     if (game.isGameOver()) {
       let resultMessage = "";
@@ -75,6 +81,7 @@ const getPieceName = (piece) => {
 
 export const getGameEval = async (fen) => {
   try {
+    console.log("Fetching evaluation for FEN:", fen); 
     const response = await fetch("http://localhost:8001/api/eval-position/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -84,8 +91,10 @@ export const getGameEval = async (fen) => {
     if (!response.ok) throw new Error("Failed to fetch game evaluation");
 
     const data = await response.json();
+    console.log("Evaluation data received:", data); 
     return data.score;
   } catch (error) {
     console.error("Error fetching game evaluation:", error);
+    return null; 
   }
 };

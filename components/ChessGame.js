@@ -1,5 +1,3 @@
-// ChessGame.js
-
 import { Chess } from "chess.js";
 import React, { useState, useEffect } from "react";
 import { Chessboard } from "react-chessboard";
@@ -56,7 +54,7 @@ const ChessGame = () => {
         {game && (
           <Chessboard
             position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
-            onPieceDrop={hasGameStarted ? (source, target) => handleMove(source, target, game, setMoves, getGameEval, setGameOverMessage, setIsGameOver) : undefined}
+            onPieceDrop={hasGameStarted ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver) : undefined}
             boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
           />
         )}
