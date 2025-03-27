@@ -34,9 +34,16 @@ const ChessGame = () => {
     fetchStockfishLevel();
   }, []);
 
-  useEffect(() => {
-    if (game && game.isGameOver()) {
-      setIsGameOver(true);
+  const handleMove = async (source, target) => {
+    const move = game.move({ from: source, to: target, promotion: "q" });
+    if (move === null) return false;
+
+    const moveNumber = Math.floor(game.history().length / 2) + 1;
+    const moveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(move.piece)} - ${move.san}`;
+
+    setMoves((prevMoves) => [...prevMoves, moveNotation]);
+
+    if (game.isGameOver()) {
       let resultMessage = "";
 
       if (game.isCheckmate()) {
@@ -50,24 +57,6 @@ const ChessGame = () => {
       }
 
       setGameOverMessage(resultMessage);
-      setLevelMessage(resultMessage);
-    }
-    if (game) {
-      getGameEval(game.fen());
-    }
-  }, [game]);
-
-  const handleStockfishMove = async (source, target) => {
-    const move = game.move({ from: source, to: target, promotion: "q" });
-    if (move === null) return false;
-
-    const moveNumber = Math.floor(game.history().length / 2) + 1;
-    const moveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(move.piece)} - ${move.san}`;
-
-    setMoves((prevMoves) => [...prevMoves, moveNotation]);
-    setGame(game); // Update the game state
-
-    if (game.isGameOver()) {
       setIsGameOver(true);
       return true;
     }
@@ -87,16 +76,30 @@ const ChessGame = () => {
       const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
       setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
 
-      setGame(game); // Update the game state
+      if (game.isGameOver()) {
+        let resultMessage = "";
 
-      if (game.isGameOver()) setIsGameOver(true);
+        if (game.isCheckmate()) {
+          resultMessage = game.turn() === "w" ? "Black wins by checkmate" : "White wins by checkmate";
+        } else if (game.isStalemate()) {
+          resultMessage = "It's a draw (stalemate)";
+        } else if (game.isDraw()) {
+          resultMessage = "It's a draw (insufficient material, threefold repetition, or 50-move rule)";
+        } else {
+          resultMessage = "Game Over (unknown reason)";
+        }
+
+        setGameOverMessage(resultMessage);
+        setIsGameOver(true);
+      }
     } catch (error) {
       console.error("Stockfish error:", error);
       alert("Error getting computer move");
     }
 
     return true;
-  };
+};
+
 
   const changeStockfishLevel = async (event) => {
     const newLevel = parseInt(event.target.value, 10);
@@ -161,7 +164,7 @@ const ChessGame = () => {
         {game && (
           <Chessboard
             position={game.fen()}
-            onPieceDrop={handleStockfishMove}
+            onPieceDrop={handleMove}
             boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
           />
         )}
