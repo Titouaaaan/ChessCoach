@@ -1,6 +1,22 @@
-export const handleMove = async (source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver) => {
+export const handleMove = async (source, target, game, 
+                                 setMoves, setEvaluation, getGameEval, setGameOverMessage, 
+                                 setIsGameOver, setLastMove, setIsCheck, setCheckmate,
+                                 setStockfishLastMove) => {
+                                  
   const move = game.move({ from: source, to: target, promotion: "q" });
   if (move === null) return false;
+
+  setLastMove({ from: source, to: target });
+
+  if (game.inCheck()) {
+    setIsCheck(true);
+  } else {
+    setIsCheck(false);
+  }
+
+  if (game.isCheckmate()) {
+    setCheckmate(true);
+  }
 
   const moveNumber = Math.floor(game.history().length / 2) + 1;
   const moveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(move.piece)} - ${move.san}`;
@@ -42,8 +58,17 @@ export const handleMove = async (source, target, game, setMoves, setEvaluation, 
     const data = await response.json();
     const stockfishMove = game.move(data.move);
 
-    const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
-    setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
+    if (stockfishMove) {
+      setStockfishLastMove({ from: stockfishMove.from, to: stockfishMove.to });
+
+      const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
+      setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
+
+      // Evaluate the position after Stockfish's move
+      const newEvaluation = await getGameEval(game.fen());
+      console.log("Evaluation after Stockfish's move:", newEvaluation);
+      setEvaluation(newEvaluation);
+    }
 
     // Evaluate the position after Stockfish's move
     const newEvaluation = await getGameEval(game.fen());
