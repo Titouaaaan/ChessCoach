@@ -397,11 +397,30 @@ body {
 /* Chess Game Styling */
 .chessContainer {
   display: flex;
-  flex-direction: row;
+  flex-direction: column; /* Stack elements vertically */
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 1px;
   padding: 20px;
+}
+
+.chessRowContainer {
+  display: flex;
+  flex-direction: row; /* Align elements in a row */
+  justify-content: center;
+  align-items: flex-start; /* Align items to the start vertically */
+  width: 100%;
+  gap: 20px;
+}
+
+.chessBoardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.1);
 }
 
 /* Sidebar */
@@ -424,6 +443,8 @@ body {
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  color: black;
+  font-weight: bold;
 }
 
 .chessMenuButton:hover {
@@ -482,3 +503,17 @@ body {
   font-family: monospace;
   padding: 2px 0;
 }
+
+.illegalMoveMessage {
+  color: #ccffcc; /* Use the same color as other interactive elements */
+  text-align: center;
+  margin-top: 10px; /* Reduced margin to bring it closer to the board */
+  width: 10%;
+  background-color: #333; /* Match the background color of other containers */
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1); /* Add a subtle shadow for consistency */
+  font-size: 18px;
+  font-family: 'Arial', sans-serif; /* Ensure it matches the font used elsewhere */
+}
+
