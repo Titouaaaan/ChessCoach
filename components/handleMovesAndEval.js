@@ -1,11 +1,24 @@
 export const handleMove = async (source, target, game,
                                  setMoves, setEvaluation, getGameEval, setGameOverMessage,
                                  setIsGameOver, setLastMove, setIsCheck, setCheckmate,
-                                 setStockfishLastMove) => {
+                                 setStockfishLastMove, setIllegalMoveMessage) => {
+  try {
+  // Check if the move is valid before attempting to make it
+  const legalMoves = game.moves({ square: source, verbose: true });
+  const isValidMove = legalMoves.some(move => move.to === target);
+
+  if (!isValidMove) {
+    setIllegalMoveMessage('Illegal move');
+    return false;
+  }
 
   const move = game.move({ from: source, to: target, promotion: "q" });
-  if (move === null) return false;
+  if (move === null) {
+    setIllegalMoveMessage('Illegal move');
+    return false;
+  }
 
+  setIllegalMoveMessage(null); // Clear any previous illegal move message
   setLastMove({ from: source, to: target });
 
   // Check if the current player's king is in check
@@ -35,6 +48,55 @@ export const handleMove = async (source, target, game,
   if (game.isGameOver()) {
     let resultMessage = "";
 
+  if (game.isCheckmate()) {
+    resultMessage = game.turn() === "w" ? "Black wins by checkmate" : "White wins by checkmate";
+  } else if (game.isStalemate()) {
+    resultMessage = "It's a draw (stalemate)";
+  } else if (game.isDraw()) {
+    resultMessage = "It's a draw (insufficient material, threefold repetition, or 50-move rule)";
+  } else {
+    resultMessage = "Game Over (unknown reason)";
+  }
+
+  setGameOverMessage(resultMessage);
+  setIsGameOver(true);
+  return true;
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:8001/api/stockfish-move/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fen: game.fen() }),
+      }
+    );
+
+  if (!response.ok) throw new Error("Stockfish request failed");
+
+  const data = await response.json();
+  const stockfishMove = game.move(data.move);
+
+  if (stockfishMove) {
+    setStockfishLastMove({ from: stockfishMove.from, to: stockfishMove.to });
+
+  const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
+  setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
+
+  // Evaluate the position after Stockfish's move
+  const newEvaluation = await getGameEval(game.fen());
+  console.log("Evaluation after Stockfish's move:", newEvaluation);
+  setEvaluation(newEvaluation);
+  }
+
+  // Evaluate the position after Stockfish's move
+  const newEvaluation = await getGameEval(game.fen());
+  console.log("Evaluation after Stockfish's move:", newEvaluation); // Debugging log
+  setEvaluation(newEvaluation);
+
+  if (game.isGameOver()) {
+    let resultMessage = "";
+
     if (game.isCheckmate()) {
       resultMessage = game.turn() === "w" ? "Black wins by checkmate" : "White wins by checkmate";
     } else if (game.isStalemate()) {
@@ -47,60 +109,19 @@ export const handleMove = async (source, target, game,
 
     setGameOverMessage(resultMessage);
     setIsGameOver(true);
-    return true;
-  }
-
-  try {
-    const response = await fetch("http://localhost:8001/api/stockfish-move/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fen: game.fen() }),
-    });
-
-    if (!response.ok) throw new Error("Stockfish request failed");
-
-    const data = await response.json();
-    const stockfishMove = game.move(data.move);
-
-    if (stockfishMove) {
-      setStockfishLastMove({ from: stockfishMove.from, to: stockfishMove.to });
-
-      const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
-      setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
-
-      // Evaluate the position after Stockfish's move
-      const newEvaluation = await getGameEval(game.fen());
-      console.log("Evaluation after Stockfish's move:", newEvaluation);
-      setEvaluation(newEvaluation);
     }
-
-    // Evaluate the position after Stockfish's move
-    const newEvaluation = await getGameEval(game.fen());
-    console.log("Evaluation after Stockfish's move:", newEvaluation); // Debugging log
-    setEvaluation(newEvaluation);
-
-    if (game.isGameOver()) {
-      let resultMessage = "";
-
-      if (game.isCheckmate()) {
-        resultMessage = game.turn() === "w" ? "Black wins by checkmate" : "White wins by checkmate";
-      } else if (game.isStalemate()) {
-        resultMessage = "It's a draw (stalemate)";
-      } else if (game.isDraw()) {
-        resultMessage = "It's a draw (insufficient material, threefold repetition, or 50-move rule)";
-      } else {
-        resultMessage = "Game Over (unknown reason)";
-      }
-
-      setGameOverMessage(resultMessage);
-      setIsGameOver(true);
-    }
-  } catch (error) {
-    console.error("Stockfish error:", error);
-    alert("Error getting computer move");
+  } 
+  catch (error) {
+  console.error("Stockfish error:", error);
+  alert("Error getting computer move");
   }
 
   return true;
+  } catch (error) {
+  console.error("Error handling move:", error);
+  setIllegalMoveMessage('Illegal move');
+  return false;
+  }
 };
 
 const getPieceName = (piece) => {
