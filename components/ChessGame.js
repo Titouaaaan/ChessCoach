@@ -14,6 +14,10 @@ const ChessGame = () => {
   const [evaluation, setEvaluation] = useState(null);
   const [gameOverMessage, setGameOverMessage] = useState("");
   const [moves, setMoves] = useState([]);
+  const [lastMove, setLastMove] = useState(null);
+  const [isCheck, setIsCheck] = useState(false);
+  const [checkmate, setCheckmate] = useState(false);
+  const [stockfishLastMove, setStockfishLastMove] = useState(null);
 
   useEffect(() => {
     fetchStockfishLevel(setStockfishLevel, setLevelMessage);
@@ -27,6 +31,50 @@ const ChessGame = () => {
     setEvaluation(null);
     setHasGameStarted(true);
   };
+
+  const getSquareStyles = () => {
+    const styles = {};
+    const currentTurn = game.turn(); // 'w' for White, 'b' for Black
+  
+    // Highlight only the last move of the player who just moved
+    if (lastMove && currentTurn === "b") {
+      styles[lastMove.from] = { backgroundColor: "lightyellow" };
+      styles[lastMove.to] = { backgroundColor: "lightyellow" };
+    }
+  
+    if (stockfishLastMove && currentTurn === "w") {
+      styles[stockfishLastMove.from] = { backgroundColor: "lightblue" };
+      styles[stockfishLastMove.to] = { backgroundColor: "lightblue" };
+    }
+  
+    // Highlight the king in red if in check
+    if (isCheck) {
+      const board = game.board();
+      for (let row of board) {
+        for (let piece of row) {
+          if (piece && piece.type === "k" && piece.color === currentTurn) {
+            styles[piece.square] = { backgroundColor: "red" };
+          }
+        }
+      }
+    }
+  
+    // Highlight checkmate in dark red
+    if (checkmate) {
+      const board = game.board();
+      for (let row of board) {
+        for (let piece of row) {
+          if (piece && piece.type === "k" && piece.color === currentTurn) {
+            styles[piece.square] = { backgroundColor: "darkred" };
+          }
+        }
+      }
+    }
+  
+    return styles;
+  };
+  
+  
 
   return (
     <div className="chessContainer">
@@ -53,10 +101,11 @@ const ChessGame = () => {
       <div className="chessBoardContainer">
         {game && (
           <Chessboard
-            position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
-            onPieceDrop={hasGameStarted ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver) : undefined}
-            boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
-          />
+          position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
+          onPieceDrop={hasGameStarted ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, setStockfishLastMove) : undefined}
+          boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
+          customSquareStyles={getSquareStyles()} // Pass the function here
+        />
         )}
       </div>
       <div className="moveHistory">
