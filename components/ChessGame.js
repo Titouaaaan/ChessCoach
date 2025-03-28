@@ -47,35 +47,25 @@ const ChessGame = () => {
       styles[stockfishLastMove.to] = { backgroundColor: "lightblue" };
     }
   
-    // Highlight the king in red if in check
-    if (isCheck) {
-      const board = game.board();
-      for (let row of board) {
-        for (let piece of row) {
-          if (piece && piece.type === "k" && piece.color === currentTurn) {
-            styles[piece.square] = { backgroundColor: "red" };
-          }
-        }
+    // Check for check at the beginning of the turn
+    if (game.inCheck()) {
+      const kingSquare = game.board().flat().find(piece => piece && piece.type === "k" && piece.color === currentTurn)?.square;
+      if (kingSquare) {
+        styles[kingSquare] = { backgroundColor: "red" };
       }
     }
   
     // Highlight checkmate in dark red
-    if (checkmate) {
-      const board = game.board();
-      for (let row of board) {
-        for (let piece of row) {
-          if (piece && piece.type === "k" && piece.color === currentTurn) {
-            styles[piece.square] = { backgroundColor: "darkred" };
-          }
-        }
+    if (game.isCheckmate()) {
+      const kingSquare = game.board().flat().find(piece => piece && piece.type === "k" && piece.color === currentTurn)?.square;
+      if (kingSquare) {
+        styles[kingSquare] = { backgroundColor: "darkred" };
       }
     }
   
     return styles;
   };
   
-  
-
   return (
     <div className="chessContainer">
       <div className="chessSidebar">
@@ -101,11 +91,11 @@ const ChessGame = () => {
       <div className="chessBoardContainer">
         {game && (
           <Chessboard
-          position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
-          onPieceDrop={hasGameStarted ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, setStockfishLastMove) : undefined}
-          boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
-          customSquareStyles={getSquareStyles()} // Pass the function here
-        />
+            position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
+            onPieceDrop={hasGameStarted ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, setStockfishLastMove) : undefined}
+            boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
+            customSquareStyles={getSquareStyles()} // Pass the function here
+          />
         )}
       </div>
       <div className="moveHistory">

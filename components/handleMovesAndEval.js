@@ -1,21 +1,25 @@
-export const handleMove = async (source, target, game, 
-                                 setMoves, setEvaluation, getGameEval, setGameOverMessage, 
+export const handleMove = async (source, target, game,
+                                 setMoves, setEvaluation, getGameEval, setGameOverMessage,
                                  setIsGameOver, setLastMove, setIsCheck, setCheckmate,
                                  setStockfishLastMove) => {
-                                  
+
   const move = game.move({ from: source, to: target, promotion: "q" });
   if (move === null) return false;
 
   setLastMove({ from: source, to: target });
 
+  // Check if the current player's king is in check
   if (game.inCheck()) {
     setIsCheck(true);
   } else {
     setIsCheck(false);
   }
 
+  // Check if the current player is in checkmate
   if (game.isCheckmate()) {
     setCheckmate(true);
+  } else {
+    setCheckmate(false);
   }
 
   const moveNumber = Math.floor(game.history().length / 2) + 1;
@@ -106,7 +110,7 @@ const getPieceName = (piece) => {
 
 export const getGameEval = async (fen) => {
   try {
-    console.log("Fetching evaluation for FEN:", fen); 
+    console.log("Fetching evaluation for FEN:", fen);
     const response = await fetch("http://localhost:8001/api/eval-position/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -116,10 +120,10 @@ export const getGameEval = async (fen) => {
     if (!response.ok) throw new Error("Failed to fetch game evaluation");
 
     const data = await response.json();
-    console.log("Evaluation data received:", data); 
+    console.log("Evaluation data received:", data);
     return data.score;
   } catch (error) {
     console.error("Error fetching game evaluation:", error);
-    return null; 
+    return null;
   }
 };
