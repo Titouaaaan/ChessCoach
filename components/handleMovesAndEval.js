@@ -1,7 +1,8 @@
 export const handleMove = async (source, target, game,
                                  setMoves, setEvaluation, getGameEval, setGameOverMessage,
                                  setIsGameOver, setLastMove, setIsCheck, setCheckmate,
-                                 setStockfishLastMove, setIllegalMoveMessage) => {
+                                 setStockfishLastMove, setIllegalMoveMessage,
+                                 setCapturedPiecesPlayer1, setCapturedPiecesPlayer2) => {
   try {
   // Check if the move is valid before attempting to make it
   const legalMoves = game.moves({ square: source, verbose: true });
@@ -16,6 +17,15 @@ export const handleMove = async (source, target, game,
   if (move === null) {
     setIllegalMoveMessage('Illegal move');
     return false;
+  }
+
+  // Handle captures
+  if (move.captured) {
+    if (game.turn() === "w") {
+      setCapturedPiecesPlayer1((prev) => [...prev, move.captured]);
+    } else {
+      setCapturedPiecesPlayer2((prev) => [...prev, move.captured]);
+    }
   }
 
   setIllegalMoveMessage(null); // Clear any previous illegal move message
@@ -80,6 +90,15 @@ export const handleMove = async (source, target, game,
   if (stockfishMove) {
     setStockfishLastMove({ from: stockfishMove.from, to: stockfishMove.to });
 
+  // Handle captures by Stockfish
+  if (stockfishMove.captured) {
+    if (game.turn() === "w") {
+      setCapturedPiecesPlayer1((prev) => [...prev, stockfishMove.captured]);
+    } else {
+      setCapturedPiecesPlayer2((prev) => [...prev, stockfishMove.captured]);
+    }
+  }
+  
   const stockfishMoveNotation = `${moveNumber}. ${game.turn() === "b" ? "w" : "b"}: ${getPieceName(stockfishMove.piece)} - ${stockfishMove.san}`;
   setMoves((prevMoves) => [...prevMoves, stockfishMoveNotation]);
 
