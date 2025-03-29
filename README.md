@@ -125,13 +125,14 @@ uvicorn backend.main:app --reload --port 8001
 
 Phase 1 (before AI stuff)
 - [x] add stockfish
-- [ ] add a button to start playing to not always have the board displayed
+- [x] add a button to start playing to not always have the board displayed
 - [ ] change the difficulty of stockfish based on the saved rating of the user (if there is one)
-- [ ] change the difficulty of stockfish manually (choose after clicking play)
-- [ ] add button to change difficulty during the game
+- [x] change the difficulty of stockfish manually (choose after clicking play)
+- [x] add button to change difficulty during the game
 - [ ] add a text box to print the winning odds of the game (advantage)
 - [ ] add a logging system for debugging or game review 
 - [ ] make the website pretty (oh lord that will take forever)
+- [ ] make a proper UI when installing the project (two terminals looks fishy)
 
 Phase 2 
 TBD
