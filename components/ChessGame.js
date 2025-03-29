@@ -19,6 +19,7 @@ const ChessGame = () => {
   const [checkmate, setCheckmate] = useState(false);
   const [stockfishLastMove, setStockfishLastMove] = useState(null);
   const [illegalMoveMessage, setIllegalMoveMessage] = useState(null);
+  const [isBoardInteractable, setIsBoardInteractable] = useState(true);
 
   useEffect(() => {
     fetchStockfishLevel(setStockfishLevel, setLevelMessage);
@@ -35,6 +36,14 @@ const ChessGame = () => {
     }
   }, [illegalMoveMessage]);
 
+  useEffect(() => {
+    if (game.isCheckmate()) {
+      setIsBoardInteractable(false); // Disable board interaction on checkmate
+      setIsGameOver(true);
+      setGameOverMessage("Checkmate!");
+    }
+  }, [game]);
+
   const startNewGame = () => {
     setGame(new Chess());
     setMoves([]);
@@ -43,23 +52,24 @@ const ChessGame = () => {
     setEvaluation(null);
     setHasGameStarted(true);
     setIllegalMoveMessage(null);
+    setIsBoardInteractable(true);
   };
 
   const getSquareStyles = () => {
     const styles = {};
     const currentTurn = game.turn(); // 'w' for White, 'b' for Black
-  
+
     // Highlight only the last move of the player who just moved
     if (lastMove && currentTurn === "b") {
       styles[lastMove.from] = { backgroundColor: "lightyellow" };
       styles[lastMove.to] = { backgroundColor: "lightyellow" };
     }
-  
+
     if (stockfishLastMove && currentTurn === "w") {
       styles[stockfishLastMove.from] = { backgroundColor: "lightblue" };
       styles[stockfishLastMove.to] = { backgroundColor: "lightblue" };
     }
-  
+
     // Check for check at the beginning of the turn
     if (game.inCheck()) {
       const kingSquare = game.board().flat().find(piece => piece && piece.type === "k" && piece.color === currentTurn)?.square;
@@ -67,7 +77,7 @@ const ChessGame = () => {
         styles[kingSquare] = { backgroundColor: "red" };
       }
     }
-  
+
     // Highlight checkmate in dark red
     if (game.isCheckmate()) {
       const kingSquare = game.board().flat().find(piece => piece && piece.type === "k" && piece.color === currentTurn)?.square;
@@ -75,10 +85,9 @@ const ChessGame = () => {
         styles[kingSquare] = { backgroundColor: "darkred" };
       }
     }
-  
     return styles;
   };
-  
+
   return (
     <div className="chessContainer">
       <div className="chessRowContainer">
@@ -102,14 +111,29 @@ const ChessGame = () => {
             <strong>Position Evaluation:</strong> {evaluation !== null ? evaluation : "N/A"}
           </div>
         </div>
-        <div className="chessBoardContainer">
+        <div className="chessBoardContainer" style={{ position: "relative" }}>
           {game && (
-            <Chessboard
-              position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
-              onPieceDrop={hasGameStarted && !isGameOver ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, setStockfishLastMove, setIllegalMoveMessage) : undefined}
-              boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
-              customSquareStyles={getSquareStyles()} // Pass the function here
-            />
+            <>
+              <Chessboard
+                position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
+                onPieceDrop={isBoardInteractable && hasGameStarted && !isGameOver ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, setStockfishLastMove, setIllegalMoveMessage) : undefined}
+                boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
+                customSquareStyles={getSquareStyles()}
+              />
+              {!isBoardInteractable && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "transparent",
+                    zIndex: 10,
+                  }}
+                />
+              )}
+            </>
           )}
         </div>
         <div className="moveHistory">
@@ -124,9 +148,9 @@ const ChessGame = () => {
         </div>
       </div>
       {illegalMoveMessage && <div className="illegalMoveMessage">{illegalMoveMessage}</div>}
-      {isGameOver && <GameOverModal message={gameOverMessage} onClose={() => setIsGameOver(false)} />}
+      {isGameOver && <GameOverModal message={gameOverMessage} onClose={() => { setIsGameOver(false); setIsBoardInteractable(false); }} />}
     </div>
-  );  
+  );
 };
 
 export default ChessGame;
