@@ -1,6 +1,7 @@
 const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
+const crypto = require('crypto');
 
 const isWindows = process.platform === "win32";
 
@@ -15,6 +16,29 @@ const nodeModulesPath = path.join(rootPath, "node_modules");
 // Prisma paths
 const prismaFolderPath = path.join(rootPath, "prisma");
 const prismaGeneratedPath = path.join(nodeModulesPath, ".prisma");
+
+// .env file path
+const envFilePath = path.join(rootPath, '.env');
+
+// Generate a new secret key for NEXTAUTH_SECRET
+const newSecret = crypto.randomBytes(32).toString('hex');
+
+// Content for the .env file
+const envContent = `# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+DATABASE_URL="file:./dev.db"
+NEXTAUTH_SECRET=${newSecret}
+`;
+
+// Write the content to the .env file
+fs.writeFileSync(envFilePath, envContent, 'utf8');
+
+console.log('.env file created or updated with the following content:');
+console.log(envContent);
 
 // Check if the virtual environment exists
 const venvExists = fs.existsSync(venvPath);
@@ -38,11 +62,11 @@ const backendCmd = isWindows
 
 // Frontend & Prisma commands
 const installAndRunFrontendWindows = `cd ${rootPath} && npm install && ${
-  prismaInitialized ? "" : "npx prisma init && npx prisma generate && npx prisma migrate dev --name init &&"
+  !prismaInitialized ? "npx prisma generate && npx prisma migrate dev --name init &&" : ""
 } npm run dev`;
 
 const installAndRunFrontendUnix = `cd ${rootPath} && npm install; ${
-  prismaInitialized ? "" : "npx prisma init && npx prisma generate && npx prisma migrate dev --name init;"
+  !prismaInitialized ? "npx prisma generate && npx prisma migrate dev --name init;" : ""
 } npm run dev`;
 
 const runFrontendWindows = `cd ${rootPath} && npm run dev`;
