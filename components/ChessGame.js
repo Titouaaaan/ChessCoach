@@ -20,6 +20,8 @@ const ChessGame = () => {
   const [stockfishLastMove, setStockfishLastMove] = useState(null);
   const [illegalMoveMessage, setIllegalMoveMessage] = useState(null);
   const [isBoardInteractable, setIsBoardInteractable] = useState(true);
+  const [capturedPiecesPlayer1, setCapturedPiecesPlayer1] = useState([]);
+  const [capturedPiecesPlayer2, setCapturedPiecesPlayer2] = useState([]);
 
   useEffect(() => {
     fetchStockfishLevel(setStockfishLevel, setLevelMessage);
@@ -53,6 +55,16 @@ const ChessGame = () => {
     setHasGameStarted(true);
     setIllegalMoveMessage(null);
     setIsBoardInteractable(true);
+    setCapturedPiecesPlayer1([]); 
+    setCapturedPiecesPlayer2([]);
+  };
+
+  const getPieceSymbol = (piece) => {
+    const symbols = {
+      p: "♙", n: "♘", b: "♗", r: "♖", q: "♕", k: "♔",
+      P: "♟", N: "♞", B: "♝", R: "♜", Q: "♛", K: "♚"
+    };
+    return symbols[piece] || "?";
   };
 
   const getSquareStyles = () => {
@@ -112,11 +124,22 @@ const ChessGame = () => {
           </div>
         </div>
         <div className="chessBoardContainer" style={{ position: "relative" }}>
+        <div className="capturedPieces">
+            <strong>Engine captures:</strong>
+            <div>{capturedPiecesPlayer2.map((piece, index) => (
+              <span key={index} style={{ fontSize: "24px" }}>{getPieceSymbol(piece)}</span>
+            ))}</div>
+          </div>
           {game && (
             <>
               <Chessboard
                 position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
-                onPieceDrop={isBoardInteractable && hasGameStarted && !isGameOver ? (source, target) => handleMove(source, target, game, setMoves, setEvaluation, getGameEval, setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, setStockfishLastMove, setIllegalMoveMessage) : undefined}
+                onPieceDrop={
+                  isBoardInteractable && hasGameStarted && !isGameOver ? (source, target) => 
+                      handleMove(source, target, game, setMoves, setEvaluation, getGameEval, 
+                      setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, 
+                      setStockfishLastMove, setIllegalMoveMessage, 
+                      setCapturedPiecesPlayer1, setCapturedPiecesPlayer2) : undefined}
                 boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
                 customSquareStyles={getSquareStyles()}
               />
@@ -135,6 +158,12 @@ const ChessGame = () => {
               )}
             </>
           )}
+          <div className="capturedPieces">
+            <strong>Player captures:</strong>
+            <div>{capturedPiecesPlayer1.map((piece, index) => (
+              <span key={index} style={{ fontSize: "24px" }}>{getPieceSymbol(piece)}</span>
+            ))}</div>
+          </div>
         </div>
         <div className="moveHistory">
           <h3>Move History</h3>
