@@ -86,7 +86,7 @@ export const handleMove = async (source, target, game,
   // Evaluate the position after Stockfish's move
   const newEvaluation = await getGameEval(game.fen());
   console.log("Evaluation after Stockfish's move:", newEvaluation);
-  setEvaluation(newEvaluation);
+  setEvaluation(-1*newEvaluation);
   }
 
   // Evaluate the position after Stockfish's move
