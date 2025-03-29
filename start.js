@@ -20,11 +20,23 @@ const prismaGeneratedPath = path.join(nodeModulesPath, ".prisma");
 // .env file path
 const envFilePath = path.join(rootPath, '.env');
 
-// Generate a new secret key for NEXTAUTH_SECRET
-const newSecret = crypto.randomBytes(32).toString('hex');
+// Function to read the existing .env file and check for NEXTAUTH_SECRET
+function getExistingEnvContent() {
+  if (fs.existsSync(envFilePath)) {
+    const content = fs.readFileSync(envFilePath, 'utf8');
+    const secretMatch = content.match(/NEXTAUTH_SECRET=([^\s]+)/);
+    if (secretMatch) {
+      return content; // Return existing content if NEXTAUTH_SECRET is found
+    }
+  }
+  return null; // Return null if file doesn't exist or NEXTAUTH_SECRET is not found
+}
 
-// Content for the .env file
-const envContent = `# Environment variables declared in this file are automatically made available to Prisma.
+// Get existing .env content or generate a new secret key for NEXTAUTH_SECRET
+let envContent = getExistingEnvContent();
+if (!envContent) {
+  const newSecret = crypto.randomBytes(32).toString('hex');
+  envContent = `# Environment variables declared in this file are automatically made available to Prisma.
 # See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
 
 # Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
@@ -34,11 +46,13 @@ DATABASE_URL="file:./dev.db"
 NEXTAUTH_SECRET=${newSecret}
 `;
 
-// Write the content to the .env file
-fs.writeFileSync(envFilePath, envContent, 'utf8');
-
-console.log('.env file created or updated with the following content:');
-console.log(envContent);
+  // Write the content to the .env file
+  fs.writeFileSync(envFilePath, envContent, 'utf8');
+  console.log('.env file created or updated with the following content:');
+  console.log(envContent);
+} else {
+  console.log('.env file already contains NEXTAUTH_SECRET.');
+}
 
 // Check if the virtual environment exists
 const venvExists = fs.existsSync(venvPath);
