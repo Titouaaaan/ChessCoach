@@ -17,7 +17,6 @@ ChessCoach is a Next.js application that serves as a personal chess coach. The a
 - **LangGraph** - AI agent orchestration for game analysis and commentary.
 - **Chess Bot API / Local Engine** - Classic chess engine integration for adaptive gameplay.
 - **FastAPI** - High-performance API framework for Python.
-- **Uvicorn** - ASGI server for running FastAPI.
 
 ## Pre-requisites
 
@@ -58,9 +57,11 @@ but make sure to make it executable but running this command in the terminal fir
 chmod +x run.sh
 ```
 
+After doing that go in the ```.env file``` and add your API key under GEMINI_API_KEY="yourapikey" (you can get a free gemini key [here](https://ai.google.dev/gemini-api))
+
 I didn't test it on linux and mac so it could act funky (please let me know if you find errors)
 
-### Manually install dependencies if .sh/.bat doesn't work
+### Manually install dependencies (without .bat/.sh)
 1. Install dependencies:
    ```sh
    npm install
@@ -72,7 +73,7 @@ I didn't test it on linux and mac so it could act funky (please let me know if y
 
 2. Set up the environment variables:
    - Create a `.env` file in the root directory.
-   - Add the necessary variables, such as database URL and authentication secrets.
+   - Add your API key in the file under GEMINI_API_KEY="yourapikey" (link in previous section for free keys)
 
 3. Initialize the database (you might need to initialize and generate it too):
    ```sh
@@ -80,13 +81,14 @@ I didn't test it on linux and mac so it could act funky (please let me know if y
    npx prisma generate
    npx prisma migrate dev
    ```
+   If the DB is also configured and present you don't have to do all that but follow what it says in your terminal.
 
 4. Open Prisma Studio (optional, for database inspection):
    ```sh
    npx prisma studio
    ```
 
-### Running the App (useful if the .bat/.sh didn't work)
+### Running the App (without .bat/.sh)
 
 #### Development Mode
 ```sh
@@ -135,6 +137,10 @@ Phase 1 (before AI stuff)
 - [ ] make a proper UI when installing the project (two terminals looks fishy)
 
 Phase 2 
-TBD
+- [x] create basic agent to ask questions
+- [ ] add memory of conversation
+- [ ] add tool to read info from user profile
+- [ ] add llm guidelines for general behavior
+- [ ] integrate in FASTAPI
 
 very useful [stockfish documentation](https://python-chess.readthedocs.io/en/latest/engine.html)
