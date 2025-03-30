@@ -53,7 +53,7 @@ export const handleMove = async (source, target, game,
   // Evaluate the position after the player's move
   const evaluation = await getGameEval(game.fen());
   console.log("Evaluation after player's move:", evaluation); // Debugging log
-  setEvaluation(evaluation);
+  setEvaluation(-evaluation);
 
   if (game.isGameOver()) {
     let resultMessage = "";
@@ -105,13 +105,8 @@ export const handleMove = async (source, target, game,
   // Evaluate the position after Stockfish's move
   const newEvaluation = await getGameEval(game.fen());
   console.log("Evaluation after Stockfish's move:", newEvaluation);
-  setEvaluation(-1*newEvaluation);
-  }
-
-  // Evaluate the position after Stockfish's move
-  const newEvaluation = await getGameEval(game.fen());
-  console.log("Evaluation after Stockfish's move:", newEvaluation); // Debugging log
   setEvaluation(newEvaluation);
+  }
 
   if (game.isGameOver()) {
     let resultMessage = "";
