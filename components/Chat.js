@@ -18,20 +18,20 @@ const ChatComponent = () => {
 
     const sendUserInput = async () => {
         if (!userInput.trim()) return;
-
+    
         setLoading(true);
         setMessages((prevMessages) => [...prevMessages, { sender: 'user', text: userInput }]);
         setUserInput('');
-
+    
         try {
-            const response = await fetch('http://localhost:8001/api/receive-user-input/', {
+            const response = await fetch('http://localhost:8001/api/generate-ai-response', {  // 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message: userInput }),
+                body: JSON.stringify({ message: userInput, thread_id: "1" }),  // 
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
                 setMessages((prevMessages) => [...prevMessages, { sender: 'ai', text: data.response }]);
