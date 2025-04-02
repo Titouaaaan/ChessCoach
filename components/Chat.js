@@ -67,7 +67,7 @@ const ChatComponent = () => {
                 rows="2"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Type your message here..."
                 className="input-box"
             />
