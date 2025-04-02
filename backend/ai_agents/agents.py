@@ -19,8 +19,12 @@ if "GOOGLE_API_KEY" not in os.environ:
     # Prompt the user to enter the API key if not set
     os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
 
+load_dotenv()
+MY_API_KEY = os.getenv("GEMINI_API_KEY")
 
 model = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
+genai.configure(api_key=MY_API_KEY)
+old_model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Define state structure for conversation
 class State(TypedDict):
