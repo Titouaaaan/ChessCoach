@@ -5,6 +5,7 @@ import chess
 import chess.engine
 import logging
 import traceback
+from ai_agents.agents import model
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -32,6 +33,12 @@ class FenRequest(BaseModel):
 
 class StockfishLevelRequest(BaseModel):
     level: int
+
+class UserInput(BaseModel):
+    message: str
+
+class AIResponse(BaseModel):
+    response: str
 
 def get_engine_limits(level: int):
     """
@@ -143,3 +150,12 @@ async def eval_position(request: FenRequest):
         error_trace = traceback.format_exc()  # Get full traceback
         logger.error(f"Unexpected error:\n{error_trace}")  # Log the full traceback
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+@app.post("/api/receive-user-input/")
+async def receive_user_input(input: UserInput):
+    try:
+        # Generate AI response
+        response = model.generate_content(input.message)
+        return AIResponse(response=response.text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating response: {str(e)}")

@@ -1,4 +1,3 @@
-from google import generativeai as genai  # google-generativeai package
 import os
 from dotenv import load_dotenv
 from typing import Annotated
@@ -7,6 +6,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages 
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
+import google.generativeai as genai  # google-generativeai package
 
 memory = MemorySaver()
 
