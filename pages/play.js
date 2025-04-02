@@ -1,5 +1,6 @@
 import { useSession } from 'next-auth/react';
 import ChessGame from '../components/ChessGame';
+import ChatComponent from '../components/Chat';
 
 export default function Play() {
   const { data: session } = useSession();
@@ -17,6 +18,7 @@ export default function Play() {
   return (
     <div className="play-container">
       <h1 className="play-title">Play Chess</h1>
+      <ChatComponent />
       <div className="chess-game-container">
         <ChessGame />
       </div>
