@@ -57,7 +57,7 @@ but make sure to make it executable but running this command in the terminal fir
 chmod +x run.sh
 ```
 
-After doing that go in the ```.env file``` and add your API key under GEMINI_API_KEY="yourapikey" (you can get a free gemini key [here](https://ai.google.dev/gemini-api))
+After doing that go in the ```.env file``` and add your API key under GOOGLE_API_KEY="yourapikey" (you can get a free gemini key [here](https://ai.google.dev/gemini-api))
 
 I didn't test it on linux and mac so it could act funky (please let me know if you find errors)
 
@@ -73,7 +73,7 @@ I didn't test it on linux and mac so it could act funky (please let me know if y
 
 2. Set up the environment variables:
    - Create a `.env` file in the root directory.
-   - Add your API key in the file under GEMINI_API_KEY="yourapikey" (link in previous section for free keys)
+   - Add your API key in the file under GOOGLE_API_KEY="yourapikey" (link in previous section for free keys)
 
 3. Initialize the database (you might need to initialize and generate it too):
    ```sh
@@ -122,25 +122,28 @@ uvicorn backend.main:app --reload --port 8001
 | `/api/set-stockfish-level/`  | POST   | Set the Stockfish skill level (0-20)       |
 | `/api/stockfish-move/`       | POST   | Get the best move for a given FEN position |
 | `/api/eval-position/`        | POST   | Evaluate a given chess position (FEN)      |
+| `/api/generate-ai-response`  | POST   | Generate an AI prompt based on a user input |
 
 ## To do list
 
-Phase 1 (before AI stuff)
+Phase 1 (not AI stuff)
 - [x] add stockfish
 - [x] add a button to start playing to not always have the board displayed
 - [ ] change the difficulty of stockfish based on the saved rating of the user (if there is one)
 - [x] change the difficulty of stockfish manually (choose after clicking play)
 - [x] add button to change difficulty during the game
-- [ ] add a text box to print the winning odds of the game (advantage)
-- [ ] add a logging system for debugging or game review 
+- [x] add a text box to print the winning odds of the game (advantage)
+- [x] add a logging system for debugging 
+- [ ] improve the user profile (elo, game history etc...)
 - [ ] make the website pretty (oh lord that will take forever)
 - [ ] make a proper UI when installing the project (two terminals looks fishy)
 
 Phase 2 
 - [x] create basic agent to ask questions
-- [ ] add memory of conversation
-- [ ] add tool to read info from user profile
-- [ ] add llm guidelines for general behavior
-- [ ] integrate in FASTAPI
+- [x] add memory of conversation
+- [ ] tool to read info from user profile
+- [ ] tool to fetch state of the board
+- [ ] tool to fetch best n moves from stockfish 
+- [ ] add llm guidelines for general behavior (main prompt)
 
 very useful [stockfish documentation](https://python-chess.readthedocs.io/en/latest/engine.html)
