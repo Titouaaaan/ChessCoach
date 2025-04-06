@@ -59,6 +59,31 @@ const ChessGame = () => {
     setCapturedPiecesPlayer2([]);
   };
 
+  // Function to send FEN position to the backend
+const sendFenPositionToBackend = async (fen) => {
+  try {
+    const response = await fetch('http://localhost:8001/api/send-fen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ fen }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('FEN position sent successfully:', data);
+    } else {
+      console.error('Error sending FEN position:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+// Call this function whenever you need to send the FEN position
+sendFenPositionToBackend(game.fen());
+
   const getPieceSymbol = (piece) => {
     const symbols = {
       p: "♙", n: "♘", b: "♗", r: "♖", q: "♕", k: "♔",

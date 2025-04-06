@@ -175,6 +175,20 @@ class UserInput(BaseModel):
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
+class FenPositionRequest(BaseModel):
+    fen: str
+
+@app.post("/api/send-fen")
+async def receive_fen_position(request: FenPositionRequest):
+    try:
+        logger.info(f"Received FEN position: {request.fen}")
+        # Process the FEN position as needed
+        # For example, you can pass it to the AI agent for move suggestions
+        return {"message": "FEN position received successfully"}
+    except Exception as e:
+        logger.error(f"Error processing FEN position: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error processing FEN position")
+
 def chatbot(state: State) -> State:
     response = model.invoke(state["messages"])  # Generate AI response
     return {"messages": response}
