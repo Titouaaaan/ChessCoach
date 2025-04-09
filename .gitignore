@@ -5,3 +5,4 @@ node_modules
 .next/
 */backendvenv
 *__pycache__/
+service-account-file.json

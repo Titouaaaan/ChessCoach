@@ -2,7 +2,7 @@
 
 export const fetchStockfishLevel = async (setStockfishLevel, setLevelMessage) => {
   try {
-    const response = await fetch("http://localhost:8001/api/get-stockfish-level/");
+    const response = await fetch("http://127.0.0.1:8001/api/get-stockfish-level/");
     if (!response.ok) throw new Error("Failed to fetch Stockfish level");
     const data = await response.json();
     setStockfishLevel(data.level);
@@ -18,7 +18,7 @@ export const changeStockfishLevel = async (newLevel, setStockfishLevel, setLevel
   setLevelMessage(`Current Level: ${newLevel}`);
 
   try {
-    await fetch("http://localhost:8001/api/set-stockfish-level/", {
+    await fetch("http://127.0.0.1:8001/api/set-stockfish-level/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ level: newLevel }),

@@ -7,12 +7,13 @@ import logging
 import traceback
 from langchain_google_genai import ChatGoogleGenerativeAI 
 from langgraph.graph import StateGraph, START, END
-from ai_agents.agents import old_model
+#from ai_agents.agents import old_model
 from typing import Annotated
 from typing_extensions import TypedDict
 from langgraph.graph.message import add_messages 
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -196,6 +197,7 @@ def chatbot(state: State) -> State:
 memory = MemorySaver() # memory of the chat
 
 #instantiation of the chatbot
+credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 model_name = "gemini-2.0-flash"
 model = ChatGoogleGenerativeAI(model=model_name)
 
