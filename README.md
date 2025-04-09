@@ -43,6 +43,15 @@ Clone the repository:
 
 To install all the dependencies automatically there is a script that does it for you (if you don't want to do that you can do it the old school way by following the next section)
 
+**Warning:** the code is currently setup to run on my raspberry pi. If you want to run it on windows go to ``` ./backend/main.py ``` and change the ```ENGINE_PATH``` to ```r"./engines/stockfish-windows/stockfish-windows-x86-64-avx2.exe"```
+Also create a ```.env file``` and add your API key under ```GOOGLE_API_KEY="yourapikey"``` (you can get a free gemini key [here](https://ai.google.dev/gemini-api)).
+Also add your service account json to ```GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account-file.json"```. You can get that json by going to the [Google Cloud Console](https://console.cloud.google.com/welcome?invt=AbuTbg&project=security-2-openid-hm), Navigate to the **IAM & Admin** section and select **Service Accounts.** Click **Create Service Account** and follow the prompts to create a new service account. After creating the service account, click on it to view its details.Under the **Keys** section, click **Add Key** and select **Create New Key.**
+Choose the JSON key type and click **Create.** This will download a JSON file containing the service account credentials.
+
+Then you need to export/set it (based on your OS), like this on windows for ex:
+```set GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\service-account-file.json"```
+
+
 On windows, simply run the script
 ```sh
 run.bat
@@ -56,8 +65,6 @@ but make sure to make it executable but running this command in the terminal fir
 ```sh
 chmod +x run.sh
 ```
-
-After doing that go in the ```.env file``` and add your API key under GOOGLE_API_KEY="yourapikey" (you can get a free gemini key [here](https://ai.google.dev/gemini-api))
 
 I didn't test it on linux and mac so it could act funky (please let me know if you find errors)
 
@@ -115,7 +122,7 @@ source backendvenv/bin/activate
 ```
 
 ```sh
-uvicorn backend.main:app --reload --port 8001
+uvicorn main:app --host 0.0.0.0 --port 8001
 ```
 
 | Endpoint                     | Method | Description                                  |
