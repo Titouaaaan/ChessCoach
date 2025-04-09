@@ -37,7 +37,7 @@ async def root():
 # ========================================================================================
 # Stockfish relevant stuff
 # Path to Stockfish engine
-ENGINE_PATH = r"./engines/stockfish/stockfish-windows-x86-64-avx2.exe"
+ENGINE_PATH = r"./engines/Stockfish-sf_15/src/stockfish"
 
 # Global variable to store Stockfish level
 stockfish_level = 1
@@ -198,6 +198,9 @@ memory = MemorySaver() # memory of the chat
 
 #instantiation of the chatbot
 credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if not credentials_path:
+    raise ValueError("GOOGLE_APPLICATION_CREDENTIALS environment variable not set")
+print(f"Credentials path: {credentials_path}")  # Debug statement
 model_name = "gemini-2.0-flash"
 model = ChatGoogleGenerativeAI(model=model_name)
 

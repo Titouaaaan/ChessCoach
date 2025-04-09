@@ -75,7 +75,7 @@ export const handleMove = async (source, target, game,
 
   try {
     const response = await fetch(
-      "http://localhost:8001/api/stockfish-move/", {
+      "http://192.168.1.119:8001/api/stockfish-move/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fen: game.fen() }),
@@ -146,7 +146,7 @@ const getPieceName = (piece) => {
 export const getGameEval = async (fen) => {
   try {
     console.log("Fetching evaluation for FEN:", fen);
-    const response = await fetch("http://localhost:8001/api/eval-position/", {
+    const response = await fetch("http://192.168.1.119:8001/api/eval-position/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fen }),

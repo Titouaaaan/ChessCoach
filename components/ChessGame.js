@@ -62,7 +62,7 @@ const ChessGame = () => {
   // Function to send FEN position to the backend
 const sendFenPositionToBackend = async (fen) => {
   try {
-    const response = await fetch('http://127.0.0.1:8001/api/send-fen', {
+    const response = await fetch('http://192.168.1.119:8001/api/send-fen', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -24,7 +24,7 @@ const ChatComponent = () => {
         setUserInput('');
     
         try {
-            const response = await fetch('http://localhost:8001/api/generate-ai-response', {  // 
+            const response = await fetch('http://192.168.1.119:8001/api/generate-ai-response', {  // 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
