@@ -88,7 +88,8 @@ I didn't test it on linux and mac so it could act funky (please let me know if y
    npx prisma studio
    ```
 
-5. For the engines, TESTING 
+5. For the engines, rn we support for raspberry pi and for windows. If you want another distrubution you check them out [on the stockfish website](https://stockfishchess.org/download/)
+   And make sure you change the file name in ``` ./backend/main.py ```
 
 ### Running the App (without .bat/.sh)
 
