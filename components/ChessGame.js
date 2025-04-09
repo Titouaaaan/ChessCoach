@@ -1,9 +1,12 @@
 import { Chess } from "chess.js";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Chessboard } from "react-chessboard";
 import GameOverModal from "./GameOverModal";
 import { handleMove, getGameEval } from "./handleMovesAndEval";
 import { fetchStockfishLevel, changeStockfishLevel } from "./fetchStockfishLevel";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://192.168.1.119:8001";
+const STOCKFISH_LEVELS = 21;
 
 const ChessGame = () => {
   const [game, setGame] = useState(new Chess());
@@ -33,18 +36,23 @@ const ChessGame = () => {
         setIllegalMoveMessage(null);
       }, 1000);
 
-      // Clear the timeout if the component unmounts or the message changes
       return () => clearTimeout(timer);
     }
   }, [illegalMoveMessage]);
 
   useEffect(() => {
     if (game.isCheckmate()) {
-      setIsBoardInteractable(false); // Disable board interaction on checkmate
+      setIsBoardInteractable(false);
       setIsGameOver(true);
       setGameOverMessage("Checkmate!");
     }
   }, [game]);
+
+  useEffect(() => {
+    if (hasGameStarted) {
+      sendFenPositionToBackend(game.fen());
+    }
+  }, [game, hasGameStarted]);
 
   const startNewGame = () => {
     setGame(new Chess());
@@ -55,34 +63,28 @@ const ChessGame = () => {
     setHasGameStarted(true);
     setIllegalMoveMessage(null);
     setIsBoardInteractable(true);
-    setCapturedPiecesPlayer1([]); 
+    setCapturedPiecesPlayer1([]);
     setCapturedPiecesPlayer2([]);
   };
 
-  // Function to send FEN position to the backend
-const sendFenPositionToBackend = async (fen) => {
-  try {
-    const response = await fetch('http://192.168.1.119:8001/api/send-fen', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ fen }),
-    });
+  const sendFenPositionToBackend = async (fen) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/send-fen`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fen }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log('FEN position sent successfully:', data);
-    } else {
-      console.error('Error sending FEN position:', response.statusText);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('FEN position sent successfully:', data);
+      } else {
+        console.error('Error sending FEN position:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
-  } catch (error) {
-    console.error('Error:', error);
-  }
-};
-
-// Call this function whenever you need to send the FEN position
-sendFenPositionToBackend(game.fen());
+  };
 
   const getPieceSymbol = (piece) => {
     const symbols = {
@@ -92,11 +94,10 @@ sendFenPositionToBackend(game.fen());
     return symbols[piece] || "?";
   };
 
-  const getSquareStyles = () => {
+  const getSquareStyles = useMemo(() => {
     const styles = {};
-    const currentTurn = game.turn(); // 'w' for White, 'b' for Black
+    const currentTurn = game.turn();
 
-    // Highlight only the last move of the player who just moved
     if (lastMove && currentTurn === "b") {
       styles[lastMove.from] = { backgroundColor: "lightyellow" };
       styles[lastMove.to] = { backgroundColor: "lightyellow" };
@@ -107,7 +108,6 @@ sendFenPositionToBackend(game.fen());
       styles[stockfishLastMove.to] = { backgroundColor: "lightblue" };
     }
 
-    // Check for check at the beginning of the turn
     if (game.inCheck()) {
       const kingSquare = game.board().flat().find(piece => piece && piece.type === "k" && piece.color === currentTurn)?.square;
       if (kingSquare) {
@@ -115,7 +115,6 @@ sendFenPositionToBackend(game.fen());
       }
     }
 
-    // Highlight checkmate in dark red
     if (game.isCheckmate()) {
       const kingSquare = game.board().flat().find(piece => piece && piece.type === "k" && piece.color === currentTurn)?.square;
       if (kingSquare) {
@@ -123,7 +122,7 @@ sendFenPositionToBackend(game.fen());
       }
     }
     return styles;
-  };
+  }, [game, lastMove, stockfishLastMove]);
 
   return (
     <div className="chessContainer">
@@ -139,7 +138,7 @@ sendFenPositionToBackend(game.fen());
               value={stockfishLevel}
               onChange={(e) => changeStockfishLevel(parseInt(e.target.value, 10), setStockfishLevel, setLevelMessage)}
             >
-              {Array.from({ length: 21 }, (_, i) => (
+              {Array.from({ length: STOCKFISH_LEVELS }, (_, i) => (
                 <option key={i} value={i}>{i}</option>
               ))}
             </select>
@@ -149,7 +148,7 @@ sendFenPositionToBackend(game.fen());
           </div>
         </div>
         <div className="chessBoardContainer" style={{ position: "relative" }}>
-        <div className="capturedPieces">
+          <div className="capturedPieces">
             <strong>Engine captures:</strong>
             <div>{capturedPiecesPlayer2.map((piece, index) => (
               <span key={index} style={{ fontSize: "24px" }}>{getPieceSymbol(piece)}</span>
@@ -160,13 +159,13 @@ sendFenPositionToBackend(game.fen());
               <Chessboard
                 position={hasGameStarted ? game.fen() : "8/8/8/8/8/8/8/8 w - - 0 1"}
                 onPieceDrop={
-                  isBoardInteractable && hasGameStarted && !isGameOver ? (source, target) => 
-                      handleMove(source, target, game, setMoves, setEvaluation, getGameEval, 
-                      setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate, 
-                      setStockfishLastMove, setIllegalMoveMessage, 
+                  isBoardInteractable && hasGameStarted && !isGameOver ? (source, target) =>
+                      handleMove(source, target, game, setMoves, setEvaluation, getGameEval,
+                      setGameOverMessage, setIsGameOver, setLastMove, setIsCheck, setCheckmate,
+                      setStockfishLastMove, setIllegalMoveMessage,
                       setCapturedPiecesPlayer1, setCapturedPiecesPlayer2) : undefined}
                 boardWidth={Math.min(window.innerWidth * 0.7, window.innerHeight * 0.7)}
-                customSquareStyles={getSquareStyles()}
+                customSquareStyles={getSquareStyles}
               />
               {!isBoardInteractable && (
                 <div
