@@ -14,6 +14,12 @@ from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage
 import os
+import json
+from langchain_core.messages import ToolMessage
+from dotenv import load_dotenv
+load_dotenv()
+import os
+print("TAVILY_API_KEY:", os.getenv("TAVILY_API_KEY"))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -170,6 +176,11 @@ async def receive_user_input(input: UserInput):
         raise HTTPException(status_code=500, detail=f"Error generating response: {str(e)}")
  """
 
+from langchain_community.tools.tavily_search import TavilySearchResults
+
+tool = TavilySearchResults(max_results=2)
+tools = [tool]
+
 class UserInput(BaseModel):
     message: str
 
@@ -203,43 +214,115 @@ if not credentials_path:
 print(f"Credentials path: {credentials_path}")  # Debug statement
 model_name = "gemini-2.0-flash"
 model = ChatGoogleGenerativeAI(model=model_name)
+model = model.bind_tools(tools)
+
+class BasicToolNode:
+    """A node that runs the tools requested in the last AIMessage."""
+
+    def __init__(self, tools: list) -> None:
+        self.tools_by_name = {tool.name: tool for tool in tools}
+
+    def __call__(self, inputs: dict):
+        if messages := inputs.get("messages", []):
+            message = messages[-1]
+        else:
+            raise ValueError("No message found in input")
+        outputs = []
+        for tool_call in message.tool_calls:
+            tool_result = self.tools_by_name[tool_call["name"]].invoke(
+                tool_call["args"]
+            )
+            outputs.append(
+                ToolMessage(
+                    content=json.dumps(tool_result),
+                    name=tool_call["name"],
+                    tool_call_id=tool_call["id"],
+                )
+            )
+        return {"messages": outputs}
+
+tool_node = BasicToolNode(tools=[tool])
+
+def route_tools(
+    state: State,
+):
+    """
+    Use in the conditional_edge to route to the ToolNode if the last message
+    has tool calls. Otherwise, route to the end.
+    """
+    if isinstance(state, list):
+        ai_message = state[-1]
+    elif messages := state.get("messages", []):
+        ai_message = messages[-1]
+    else:
+        raise ValueError(f"No messages found in input state to tool_edge: {state}")
+    if hasattr(ai_message, "tool_calls") and len(ai_message.tool_calls) > 0:
+        return "tools"
+    return END
 
 # creation of the graph
 # Will be extend and ported to another file for it to be more practical
 graph_builder = StateGraph(State)
+
 graph_builder.add_node("chatbot", chatbot)
+graph_builder.add_node("tools", tool_node)
+
+graph_builder.add_edge("tools", "chatbot")
 graph_builder.add_edge(START, "chatbot")
-graph_builder.add_edge("chatbot", END)
+#graph_builder.add_edge("chatbot", END)
+
+# The `tools_condition` function returns "tools" if the chatbot asks to use a tool, and "END" if
+# it is fine directly responding. This conditional routing defines the main agent loop.
+graph_builder.add_conditional_edges(
+    "chatbot",
+    route_tools,
+    # The following dictionary lets you tell the graph to interpret the condition's outputs as a specific node
+    # It defaults to the identity function, but if you
+    # want to use a node named something else apart from "tools",
+    # You can update the value of the dictionary to something else
+    # e.g., "tools": "my_tools"
+    {"tools": "tools", END: END},
+)
+
 graph = graph_builder.compile(checkpointer=memory)  # Compile the graph with memory
 config = {"configurable": {"thread_id": "1"}} # Eventually add a unique thread id to users? Need to look into how this works
+
+# If you wanna save the graph as a mermaid diagram
+""" try:
+    # Save the image to a file
+    with open("graph.png", "wb") as f:
+        f.write(graph.get_graph().draw_mermaid_png())
+    print("Image saved as graph.png")
+except Exception as e:
+    print(f"Error saving image: {e}") """
+
 
 # generate a response using the user input that is fetched from the front end
 @app.post('/api/generate-ai-response')
 async def generate_ai_response(input: UserInput):
     try:
         logger.info("Starting AI response generation.")
-        ai_response = ""  # Initialize response
+        ai_response = ""
+
+        # Explicitly instruct the AI to use its tools
+        user_message = f"Use your tools to answer the following: {input.message}"
 
         # Pass user input through graph
         for event in graph.stream(
-            {"messages": [{"role": "user", "content": input.message}]},
+            {"messages": [{"role": "user", "content": user_message}]},
             config=config,
             stream_mode="values"
         ):
             logger.info("Processing event.")
             for message in event["messages"]:
-                # logger.info("Message type:", type(message).__name__)
-                message.pretty_print() # just to display in the terminal for debugging purposes
-
-                # Check if the message is an AIMessage
+                message.pretty_print()
                 if isinstance(message, AIMessage):
-                    ai_response = str(message.content)  # Capture AI response content
-                    # logger.info(f"AI Response captured: {ai_response}")
+                    ai_response = str(message.content)
 
         if not ai_response:
             raise HTTPException(status_code=500, detail="No AI response generated.")
 
         logger.info(f"Final AI Response: {ai_response}")
-        return {"response": ai_response}  # Return the final AI response after processing all events
+        return {"response": ai_response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
